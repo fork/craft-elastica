@@ -1,6 +1,8 @@
+<!--
 <div align="left">
   <img width="600" title="Craft Elastica" src="https://github.fork.de/Craft_HeRe_201223.svg">
 </div>
+-->
 
 **Table of contents**
 
@@ -71,6 +73,7 @@ Event::on(
 
 ## Roadmap
 
+- [ ] Logo
 - [ ] Index categories
 - [ ] Maybe include search proxy
 - [ ] More documentation

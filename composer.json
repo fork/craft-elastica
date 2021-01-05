@@ -1,5 +1,5 @@
 {
-    "name": "fork/elastica",
+    "name": "fork/craft-elastica",
     "description": "A plugin to connect to Elasticsearch and persist elements via hooks",
     "type": "craft-plugin",
     "version": "1.0.1",
