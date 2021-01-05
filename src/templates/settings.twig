@@ -1,0 +1,96 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Elasticsearch plugin for Craft CMS 3.x
+ *
+ * Elasticsearch Settings.twig
+ *
+ * @author    Fork Unstable Media GmbH
+ * @copyright Copyright (c) 2021 Fork Unstable Media GmbH
+ * @link      http://fork.de
+ * @package   Elastica
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("fork\\elastica\\assetbundles\\elastica\\ElasticaAsset") %}
+
+{{ forms.editableTableField({
+    label: 'Hosts',
+    instructions: 'The Host(s) domain(s) for the elastic search instance(s). For example "elasticsearch:9200"',
+    id: 'hosts',
+    name: 'hosts',
+    cols: [
+        {
+            heading : 'Environment',
+            info: 'e.g. "dev", "staging", "production" ...',
+            type: 'singleline',
+            code: true
+        },
+        {
+            heading : 'Host',
+            info: 'e.g. "http://elasticsearch:9200" or "http://localhost:9200"',
+            type: 'singleline',
+            code: true
+        },
+        {
+            heading : 'Index prefix',
+            info: 'The name of the index prefix (for example "my_project", element types will be appended to use multiple indexes)',
+            type: 'singleline',
+            code: true
+        },
+    ],
+    rows: settings.hosts,
+    required: true
+}) }}
+
+<hr />
+
+{{ forms.textField({
+    label: 'Index Template Name',
+    instructions: 'Name for the index template in elasticsearch',
+    id: 'indexTemplateName',
+    name: 'indexTemplateName',
+    value: settings.indexTemplateName,
+}) }}
+
+{{ forms.textareaField({
+    label: 'Index Template JSON',
+    instructions: 'This adds an <a target="_blank" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html">index template</a> to define settings and mappings (afterwards Re-index needs to be triggered for changes to take effect)',
+    id: 'indexTemplate',
+    name: 'indexTemplate',
+    value: settings.indexTemplate,
+    errors: settings.getErrors('indexTemplate'),
+    rows: 20,
+    class: 'code'
+}) }}
+
+<h2>Example</h2>
+<pre class="code">
+{
+   "index_patterns":[
+      "myindex_*"
+   ],
+   "settings":{
+      "index":{
+         "analysis":{
+            "analyzer":{
+               "stop_word_analyzer":{
+                  "type":"standard"
+               }
+            }
+         }
+      }
+   },
+   "mappings":{
+      "properties":{
+         "myfield":{
+            "type":"text",
+            "analyzer":"stop_word_analyzer"
+         }
+      }
+   }
+}
+</pre>

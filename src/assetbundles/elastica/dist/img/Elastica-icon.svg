@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   viewBox="0 0 643.78668 641.30664"
+   height="641.30664"
+   width="643.78668"
+   xml:space="preserve"
+   id="svg2"
+   version="1.1"><metadata
+     id="metadata8"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+     id="defs6" /><g
+     transform="matrix(1.3333333,0,0,-1.3333333,0,641.30667)"
+     id="g10"><g
+       transform="scale(0.1)"
+       id="g12"><path
+         id="path14"
+         style="fill:#231f20;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         d="m 364.02,415.859 -14.309,-28.23 h 38.687 c -8.812,8.781 -16.816,18.32 -24.378,28.23" /><path
+         id="path16"
+         style="fill:#231f20;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         d="M 2589.28,3671.93 3986.5,910.141 H 1189.47 Z M 856.523,582.07 c 0,-75.992 -30.894,-144.742 -80.785,-194.441 H 4828.37 L 2591.11,4809.84 587.242,856.27 c 149.164,-2.801 269.281,-124.372 269.281,-274.2" /><path
+         id="path18"
+         style="fill:#231f20;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         d="m 582.066,307.609 c -151.578,0 -274.461,122.891 -274.461,274.461 0,151.578 122.883,274.461 274.461,274.461 151.575,0 274.457,-122.883 274.457,-274.461 0,-151.57 -122.882,-274.461 -274.457,-274.461 z m 529.614,514.95 h -10.91 l 5.59,11.043 C 1012.46,1028.95 813.309,1164.14 582.066,1164.14 260.602,1164.14 0,903.531 0,582.07 0,260.602 260.602,0.0117188 582.066,0.0117188 903.531,0.0117188 1164.13,260.602 1164.13,582.07 c 0,85.871 -19.07,167.121 -52.45,240.489" /><path
+         id="path20"
+         style="fill:#231f20;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         d="m 1111.68,822.559 c -1.69,3.73 -3.55,7.363 -5.32,11.043 l -5.59,-11.043 h 10.91" /></g></g></svg>

@@ -1,0 +1,46 @@
+{
+    "name": "fork/elastica",
+    "description": "A plugin to connect to Elasticsearch and persist elements via hooks",
+    "type": "craft-plugin",
+    "version": "1.0.1",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "elasticsearch",
+        "elastica",
+        "search"
+    ],
+    "support": {
+        "docs": "https://github.com/fork/elastica/blob/master/README.md",
+        "issues": "https://github.com/fork/elastica/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fork Unstable Media GmbH",
+            "homepage": "http://fork.de"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1",
+        "elasticsearch/elasticsearch": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "fork\\elastica\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Elastica",
+        "handle": "elastica",
+        "hasCpSettings": true,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/fork/elastica/master/CHANGELOG.md",
+        "components": {
+            "indexer": "fork\\elastica\\services\\Indexer"
+        },
+        "class": "fork\\elastica\\Elastica"
+    }
+}

@@ -1,0 +1,74 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Elasticsearch plugin for Craft CMS 3.x
+ *
+ * Elasticsearch Settings.twig
+ *
+ * @author    Fork Unstable Media GmbH
+ * @copyright Copyright (c) 2021 Fork Unstable Media GmbH
+ * @link      http://fork.de
+ * @package   Elastica
+ * @since     1.0.0
+ */
+#}
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("fork\\elastica\\assetbundles\\elastica\\ElasticaAsset") %}
+{% set logoUrl = view.getAssetManager().getPublishedUrl('@fork/elastica/assetbundles/elastica/dist', true) ~ '/img/Elastica-icon.svg' %}
+{% set actionUrl = actionUrl is defined ? actionUrl : cpUrl(craft.app.request.getPathInfo()) %}
+
+<img src="{{ logoUrl }}" height="60" alt="Elastica by Fork" style="float: left; margin-right: 15px;" />
+<h2>Elastica<br />by Fork</h2>
+
+<hr />
+
+{% set reIndexTriggered = triggered is defined and triggered == 're-index-triggered' %}
+
+<form class="utility" method="post" accept-charset="UTF-8" enctype="multipart/form-data" action="{{ actionUrl }}">
+    {{ forms.hidden({name: 'task', value: 're-index'}) }}
+    {{ csrfInput() }}
+
+    <div class="field">
+        <div class="heading">
+            <label>Re-index</label>
+            <div class="instructions"><p>This deletes all content in elasticsearch and re-indexes it</p>
+            </div>
+        </div>
+    </div>
+
+    {% if not reIndexTriggered and (craft.app.user.isAdmin or craft.app.user.can('elasticaIndexTemplates')) %}
+        {{ forms.checkboxField({
+            label: 'Delete complete index (WARNING: including settings and mappings!)',
+            id: 'deleteAll',
+            name: 'deleteAll'
+        }) }}
+    {% endif %}
+
+    <div class="buttons">
+        {# check if re-indexing has recently been triggered already and render button if not triggered yet --> this check prevents from accidentally triggering twice #}
+        {% if reIndexTriggered %}
+            {#<input type="submit" class="btn submit disabled" value="Re-index" disabled="disabled" />#}
+            <p>
+                ✅ Re-indexing successfully triggered.<br />
+                &rarr; See <a href="{{ cpUrl('utilities/queue-manager') }}">Queue Manager</a>.
+            </p>
+        {% else %}
+            <input type="submit" class="btn submit" value="Re-index" />
+        {% endif %}
+    </div>
+</form>
+
+{% if craft.app.user.isAdmin or craft.app.user.can('elasticaIndexTemplates') %}
+<hr />
+<h3>Apply index template from plugin settings</h3>
+<p>(Admin only or users with elastica index templates permission)</p>
+<form class="utility" method="post" accept-charset="UTF-8" enctype="multipart/form-data" action="{{ actionUrl }}">
+    {{ forms.hidden({name: 'task', value: 'index-template'}) }}
+    {{ csrfInput() }}
+
+    <div class="buttons">
+        <input type="submit" class="btn submit" value="Apply Index Template" />
+    </div>
+</form>
+{% endif %}
