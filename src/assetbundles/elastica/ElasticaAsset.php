@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2021 Fork Unstable Media GmbH
  */
 
-namespace fork\elastica\assetbundles\Elastica;
+namespace fork\elastica\assetbundles\elastica;
 
 use Craft;
 use craft\web\AssetBundle;
