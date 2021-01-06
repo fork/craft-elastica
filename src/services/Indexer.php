@@ -12,8 +12,11 @@ namespace fork\elastica\services;
 
 use Craft;
 use craft\base\Component;
+use craft\base\Element;
 use craft\elements\Entry;
 use craft\events\ModelEvent;
+use craft\helpers\StringHelper;
+use craft\models\Site;
 use craft\queue\QueueInterface;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
@@ -97,7 +100,7 @@ class Indexer extends Component
      */
     public function index($element, $content = null)
     {
-        $locale = $element->getSite()->language;
+        $site = $element->getSite();
 
         // Fire a 'beforeIndexData' event
         if ($this->hasEventHandlers(self::EVENT_BEFORE_INDEX_DATA)) {
@@ -110,7 +113,7 @@ class Indexer extends Component
         }
 
         $params = [
-            'index' => strtolower($this->indexPrefix . '_' . $element->getType() . '_' . $locale),
+            'index' => $this->getIndexName($element, $site),
             'id' => $element->id,
             'body' => $content,
         ];
@@ -143,7 +146,7 @@ class Indexer extends Component
         $isMultiSite = Craft::$app->getIsMultiSite();
 
         foreach (Craft::$app->sites->getAllSites() as $site) {
-            if ($isMultiSite) {
+            if ($element && $isMultiSite) {
                 $element = Craft::$app->entries->getEntryById($element->id, $site->id);
             }
 
@@ -159,7 +162,7 @@ class Indexer extends Component
             }
 
             $params = [
-                'index' => strtolower($this->indexPrefix . '_' . $element->getType() . '_' . $site->language),
+                'index' => $this->getIndexName($element, $site),
                 'id' => $element->id,
             ];
 
@@ -341,5 +344,18 @@ class Indexer extends Component
     protected function isSectionToBeIndexed(string $sectionHandle): bool
     {
         return in_array($sectionHandle, $this->sectionHandles);
+    }
+
+    /**
+     * Determines the index name for the element in elasticsearch
+     *
+     * @param Entry $entry
+     * @param Site $site
+     *
+     * @return string
+     */
+    protected function getIndexName(Entry $entry, Site $site): string
+    {
+        return strtolower($this->indexPrefix . '_' . StringHelper::toSnakeCase($entry->getSection()->handle) . '_' . $site->language);
     }
 }
