@@ -146,15 +146,17 @@ class Indexer extends Component
         $isMultiSite = Craft::$app->getIsMultiSite();
 
         foreach (Craft::$app->sites->getAllSites() as $site) {
-            if ($element && $isMultiSite) {
-                $element = Craft::$app->entries->getEntryById($element->id, $site->id);
+            $siteElement = $element;
+
+            if ($siteElement && $isMultiSite && !$force) {
+                $siteElement = Craft::$app->entries->getEntryById($siteElement->id, $site->id);
             }
 
-            if (!$element) {
+            if (!$siteElement) {
                 continue;
             }
 
-            $status = $element->getStatus();
+            $status = $siteElement->getStatus();
 
             // don't delete language version if still enabled for site
             if ($isMultiSite && $status == Entry::STATUS_LIVE && !$force) {
@@ -162,8 +164,8 @@ class Indexer extends Component
             }
 
             $params = [
-                'index' => $this->getIndexName($element, $site),
-                'id' => $element->id,
+                'index' => $this->getIndexName($siteElement, $site),
+                'id' => $siteElement->id,
             ];
 
             try {
@@ -316,7 +318,7 @@ class Indexer extends Component
         $entry = $event->sender;
 
         if ($this->isEntryToBeIndexed($entry)) {
-            $this->delete($entry);
+            $this->delete($entry, true);
         }
     }
 
