@@ -75,6 +75,7 @@ Event::on(
 - [ ] Index categories
 - [ ] Maybe include search proxy
 - [ ] Exclude sites via settings
+- [ ] Show index info / test index in utility
 - [ ] More documentation
 
 ---
