@@ -303,6 +303,30 @@ class Indexer extends Component
     }
 
     /**
+     * Handles the EVENT_AFTER_RESTORE event for entries.
+     *
+     * @param \yii\base\Event $event
+     *
+     * @throws \craft\errors\MissingComponentException
+     * @throws \yii\base\InvalidConfigException
+     *
+     * @see \craft\elements\Entry::EVENT_AFTER_RESTORE
+     */
+    public function handleAfterRestoreEvent(Event $event)
+    {
+        /** @var \craft\elements\Entry|\craft\models\EntryDraft $entry */
+        $entry = $event->sender;
+
+        if ($this->isEntryToBeIndexed($entry)) {
+            if ($entry->getStatus() == Entry::STATUS_LIVE) {
+                $this->index($entry);
+            } else {
+                $this->delete($entry);
+            }
+        }
+    }
+
+    /**
      * Handles the EVENT_AFTER_DELETE event for entries.
      *
      * @param \yii\base\Event $event

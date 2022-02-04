@@ -104,6 +104,9 @@ class Elastica extends Plugin
         Event::on(Entry::class, Entry::EVENT_AFTER_SAVE, function (ModelEvent $event) {
             $this->indexer->handleAfterSaveEvent($event);
         });
+        Event::on(Entry::class, Entry::EVENT_AFTER_RESTORE, function (Event $event) {
+            $this->indexer->handleAfterRestoreEvent($event);
+        });
         Event::on(Entry::class, Entry::EVENT_AFTER_DELETE, function (Event $event) {
             $this->indexer->handleAfterDeleteEvent($event);
         });
