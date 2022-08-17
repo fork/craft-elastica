@@ -21,6 +21,7 @@ class IndexEvent extends Event
 
     /**
      * @var \craft\elements\Entry
+     * @deprecated use $sender instead
      */
     public $entry;
 
