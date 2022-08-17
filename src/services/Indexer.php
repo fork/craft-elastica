@@ -13,6 +13,7 @@ namespace fork\elastica\services;
 use Craft;
 use craft\base\Component;
 use craft\base\Element;
+use craft\elements\Category;
 use craft\elements\Entry;
 use craft\events\ModelEvent;
 use craft\helpers\StringHelper;
@@ -62,6 +63,13 @@ class Indexer extends Component
     protected $sectionHandles;
 
     /**
+     * list of group handles to consider for (re-)indexing categories
+     *
+     * @var string[]
+     */
+    protected $categoryGroupHandles;
+
+    /**
      * @inheritdoc
      */
     public function init()
@@ -86,11 +94,12 @@ class Indexer extends Component
             $event = new IndexerInitEvent();
             $this->trigger(self::EVENT_INDEXER_INIT, $event);
             $this->sectionHandles = $event->getSectionHandles();
+            $this->categoryGroupHandles = $event->getCategoryGroupHandles();
         }
     }
 
     /**
-     * @param Entry $element
+     * @param Element $element
      * @param $content
      *
      * @return array|bool
@@ -98,14 +107,15 @@ class Indexer extends Component
      * @throws \craft\errors\MissingComponentException
      * @throws \yii\base\InvalidConfigException
      */
-    public function index($element, $content = null)
+    public function index(Element $element, $content = null)
     {
         $site = $element->getSite();
 
         // Fire a 'beforeIndexData' event
         if ($this->hasEventHandlers(self::EVENT_BEFORE_INDEX_DATA)) {
             $event = new IndexEvent([
-                'entry' => $element,
+                'entry' => $element, // TODO: remove in future release and use sender alone
+                'sender' => $element,
                 'indexData' => $content,
             ]);
             $this->trigger(self::EVENT_BEFORE_INDEX_DATA, $event);
@@ -135,13 +145,13 @@ class Indexer extends Component
     }
 
     /**
-     * @param Entry $element
+     * @param Element $element
      * @param bool $force
      *
      * @throws \craft\errors\MissingComponentException
      * @throws \yii\base\InvalidConfigException
      */
-    public function delete($element, $force = false)
+    public function delete(Element $element, $force = false)
     {
         $isMultiSite = Craft::$app->getIsMultiSite();
 
@@ -149,17 +159,15 @@ class Indexer extends Component
             $siteElement = $element;
 
             if ($siteElement && $isMultiSite && !$force) {
-                $siteElement = Craft::$app->entries->getEntryById($siteElement->id, $site->id);
+                $siteElement = Craft::$app->elements->getElementById($siteElement->id, get_class($siteElement), $site->id);
             }
 
             if (!$siteElement) {
                 continue;
             }
 
-            $status = $siteElement->getStatus();
-
             // don't delete language version if still enabled for site
-            if ($isMultiSite && $status == Entry::STATUS_LIVE && !$force) {
+            if ($isMultiSite && $this->isElementLive($siteElement) && !$force) {
                 continue;
             }
 
@@ -185,7 +193,7 @@ class Indexer extends Component
     }
 
     /**
-     * Reindexes the entries.
+     * Reindexes the elements.
      *
      * @param \fork\elastica\queue\ReindexJob|null $reindexJob
      * @param \craft\queue\QueueInterface|null $queue
@@ -215,7 +223,9 @@ class Indexer extends Component
         $sitesCount = count($sites);
         foreach ($sites as $siteIndex => $site) {
             $entries = Entry::find()->section($this->sectionHandles)->site($site)->all();
+            $categories = Category::find()->group($this->categoryGroupHandles)->site($site)->all();
             $entriesCount = count($entries);
+            $categoriesCount = count($categories);
 
             foreach ($entries as $entryIndex => $entry) {
                 if ($isConsole) {
@@ -228,8 +238,29 @@ class Indexer extends Component
 
                 // either execute the re-index step using passed job and queue …
                 if (!empty($reindexJob) && !empty($queue)) {
-                    $progress = $siteIndex / $sitesCount + $entryIndex / $entriesCount / $sitesCount;
+                    $progress = $siteIndex / $sitesCount + $entryIndex / ($entriesCount + $categoriesCount) / $sitesCount;
                     $label = $site->name . ' | ' . $entry->slug;
+                    $reindexJob->step($queue, $reindexStep, $progress, $label);
+                }
+                // … or just do it right here and now
+                else {
+                    $reindexStep();
+                }
+            }
+
+            foreach ($categories as $categoryIndex => $category) {
+                if ($isConsole) {
+                    echo 'Indexing category: ' . $category->title . "\n";
+                }
+
+                $reindexStep = function () use ($category) {
+                    $this->index($category);
+                };
+
+                // either execute the re-index step using passed job and queue …
+                if (!empty($reindexJob) && !empty($queue)) {
+                    $progress = $siteIndex / $sitesCount + ($entriesCount + $categoryIndex) / ($entriesCount + $categoriesCount) / $sitesCount;
+                    $label = $site->name . ' | ' . $category->slug;
                     $reindexJob->step($queue, $reindexStep, $progress, $label);
                 }
                 // … or just do it right here and now
@@ -279,85 +310,114 @@ class Indexer extends Component
     }
 
     /**
-     * Handles the EVENT_AFTER_SAVE event for entries.
+     * Handles the EVENT_AFTER_SAVE event for elements.
      *
      * @param \craft\events\ModelEvent $event
      *
      * @throws \craft\errors\MissingComponentException
      * @throws \yii\base\InvalidConfigException
      *
-     * @see \craft\elements\Entry::EVENT_AFTER_SAVE
+     * @see \craft\base\Element::EVENT_AFTER_SAVE
      */
     public function handleAfterSaveEvent(ModelEvent $event)
     {
-        /** @var \craft\elements\Entry|\craft\models\EntryDraft $entry */
-        $entry = $event->sender;
+        /** @var Element $element */
+        $element = $event->sender;
 
-        if ($this->isEntryToBeIndexed($entry)) {
-            if ($entry->getStatus() == Entry::STATUS_LIVE) {
-                $this->index($entry);
+        if ($this->isElementToBeIndexed($element)) {
+            if ($this->isElementLive($element)) {
+                $this->index($element);
             } else {
-                $this->delete($entry);
+                $this->delete($element);
             }
         }
     }
 
     /**
-     * Handles the EVENT_AFTER_RESTORE event for entries.
+     * Handles the EVENT_AFTER_RESTORE event for elements.
      *
      * @param \yii\base\Event $event
      *
      * @throws \craft\errors\MissingComponentException
      * @throws \yii\base\InvalidConfigException
      *
-     * @see \craft\elements\Entry::EVENT_AFTER_RESTORE
+     * @see \craft\base\Element::EVENT_AFTER_RESTORE
      */
     public function handleAfterRestoreEvent(Event $event)
     {
-        /** @var \craft\elements\Entry|\craft\models\EntryDraft $entry */
-        $entry = $event->sender;
+        /** @var Element $element */
+        $element = $event->sender;
 
-        if ($this->isEntryToBeIndexed($entry)) {
-            if ($entry->getStatus() == Entry::STATUS_LIVE) {
-                $this->index($entry);
+        if ($this->isElementToBeIndexed($element)) {
+            if ($this->isElementLive($element)) {
+                $this->index($element);
             } else {
-                $this->delete($entry);
+                $this->delete($element);
             }
         }
     }
 
     /**
-     * Handles the EVENT_AFTER_DELETE event for entries.
+     * Handles the EVENT_AFTER_DELETE event for elements.
      *
      * @param \yii\base\Event $event
      *
      * @throws \craft\errors\MissingComponentException
      * @throws \yii\base\InvalidConfigException
      *
-     * @see \craft\elements\Entry::EVENT_AFTER_DELETE
+     * @see \craft\base\Element::EVENT_AFTER_DELETE
      */
     public function handleAfterDeleteEvent(Event $event)
     {
-        /** @var \craft\elements\Entry|\craft\models\EntryDraft $entry */
-        $entry = $event->sender;
+        /** @var Element $element */
+        $element = $event->sender;
 
-        if ($this->isEntryToBeIndexed($entry)) {
-            $this->delete($entry, true);
+        if ($this->isElementToBeIndexed($element)) {
+            $this->delete($element, true);
         }
     }
 
     /**
-     * Determines if the given entry has to be indexed (which depends on the entry's section and the entry's publish status).
+     * Determines if the given element has to be indexed (which depends on the element's section/group and the element's status).
      *
-     * @param \craft\elements\Entry $entry
+     * @param Element $element
      *
      * @return bool
      *
      * @throws \yii\base\InvalidConfigException
      */
-    protected function isEntryToBeIndexed(Entry $entry): bool
+    protected function isElementToBeIndexed(Element $element): bool
     {
-        return $this->isSectionToBeIndexed($entry->getSection()->handle) && !$entry->getIsDraft() && !$entry->getIsRevision();
+        switch (get_class($element)) {
+            case Entry::class:
+                /** @var Entry $element */
+                return $this->isSectionToBeIndexed($element->getSection()->handle) && !$element->getIsDraft() && !$element->getIsRevision();
+
+            case Category::class:
+                /** @var Category $element */
+                return $this->isCategoryGroupToBeIndexed($element->getGroup()->handle);
+
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Determines if the given element is 'live'/'enabled'/'active' depending on the element's class
+     *
+     * @param Element $element
+     * @return bool
+     */
+    protected function isElementLive(Element $element): bool
+    {
+        switch (get_class($element)) {
+            case Entry::class:
+                /** @var Entry $element */
+                return $element->getStatus() === Entry::STATUS_LIVE;
+
+            default:
+                return $element->getStatus() === Element::STATUS_ENABLED;
+        }
     }
 
     /**
@@ -373,15 +433,43 @@ class Indexer extends Component
     }
 
     /**
+     * Determines if categories of the given group handle are considered to be indexed.
+     *
+     * @param string $sectionHandle
+     *
+     * @return bool
+     */
+    protected function isCategoryGroupToBeIndexed(string $groupHandle): bool
+    {
+        return in_array($groupHandle, $this->categoryGroupHandles);
+    }
+
+    /**
      * Determines the index name for the element in elasticsearch
      *
-     * @param Entry $entry
+     * @param Element $element
      * @param Site $site
      *
      * @return string
      */
-    protected function getIndexName(Entry $entry, Site $site): string
+    protected function getIndexName(Element $element, Site $site): string
     {
-        return strtolower($this->indexPrefix . '_' . StringHelper::toSnakeCase($entry->getSection()->handle) . '_' . $site->language);
+        switch (get_class($element)) {
+            case Entry::class:
+                /** @var Entry $element */
+                $snakeHandle = StringHelper::toSnakeCase($element->getSection()->handle);
+                break;
+
+            case Category::class:
+                /** @var Category $element */
+                $snakeHandle = StringHelper::toSnakeCase($element->getGroup()->handle);
+                break;
+
+            default:
+                $snakeHandle = '';
+                break;
+        }
+
+        return strtolower($this->indexPrefix . '_' . $snakeHandle . '_' . $site->language);
     }
 }
