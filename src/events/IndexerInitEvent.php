@@ -20,6 +20,13 @@ class IndexerInitEvent extends Event
     protected $sectionHandles = [];
 
     /**
+     * list of group handles whose categories need to be (re-)indexed by the plugin
+     *
+     * @var string[]
+     */
+    protected $categoryGroupHandles = [];
+
+    /**
      * Returns the section handles.
      *
      * @return string[]
@@ -27,6 +34,16 @@ class IndexerInitEvent extends Event
     public function getSectionHandles(): array
     {
         return $this->sectionHandles;
+    }
+
+    /**
+     * Returns the category group handles.
+     *
+     * @return string[]
+     */
+    public function getCategoryGroupHandles(): array
+    {
+        return $this->categoryGroupHandles;
     }
 
     ///**
@@ -67,6 +84,34 @@ class IndexerInitEvent extends Event
         // ensure the given handle is not empty and only added once
         if (!empty($handle) && !in_array($handle, $this->sectionHandles)) {
             $this->sectionHandles[] = $handle;
+        }
+    }
+
+    /**
+     * Adds a new set of category group handles.
+     *
+     * @param string[] $handles
+     */
+    public function addCategoryGroupHandles(array $handles)
+    {
+        foreach ($handles as $handle) {
+            // ensure the handle is a non-empty string
+            if (!empty($handle) && is_string($handle)) {
+                $this->addCategoryGroupHandle($handle);
+            }
+        }
+    }
+
+    /**
+     * Adds a new category group handle.
+     *
+     * @param string $handle
+     */
+    public function addCategoryGroupHandle(string $handle)
+    {
+        // ensure the given handle is not empty and only added once
+        if (!empty($handle) && !in_array($handle, $this->categoryGroupHandles)) {
+            $this->categoryGroupHandles[] = $handle;
         }
     }
 }
