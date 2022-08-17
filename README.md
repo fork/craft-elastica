@@ -55,6 +55,9 @@ Event::on(
        $event->addSectionHandles([
            'articles',
        ]);
+       $event->addCategoryGroupHandles([
+           'topics',
+       ]);
    }
 );
 // build elasticsearch index data
@@ -63,7 +66,7 @@ Event::on(
    Indexer::EVENT_BEFORE_INDEX_DATA,
    function (IndexEvent $event) {
        // build your custom data structure to index
-       $indexData = MyCustomPlugin::$plugin->mySearchService->getIndexData($event->entry);
+       $indexData = MyCustomPlugin::$plugin->mySearchService->getIndexData($event->sender);
        $event->indexData = $indexData;
    }
 );
@@ -72,7 +75,7 @@ Event::on(
 ## Roadmap
 
 - [x] Logo
-- [ ] Index categories
+- [x] Index categories
 - [ ] Maybe include search proxy
 - [ ] Exclude sites via settings
 - [ ] Show index info / test index in utility
