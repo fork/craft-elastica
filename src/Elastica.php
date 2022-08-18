@@ -11,8 +11,8 @@
 namespace fork\elastica;
 
 use Craft;
+use craft\base\Element;
 use craft\base\Plugin;
-use craft\elements\Entry;
 use craft\events\ModelEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUserPermissionsEvent;
@@ -101,13 +101,13 @@ class Elastica extends Plugin
         }
 
         // elasticsearch index actions
-        Event::on(Entry::class, Entry::EVENT_AFTER_SAVE, function (ModelEvent $event) {
+        Event::on(Element::class, Element::EVENT_AFTER_SAVE, function (ModelEvent $event) {
             $this->indexer->handleAfterSaveEvent($event);
         });
-        Event::on(Entry::class, Entry::EVENT_AFTER_RESTORE, function (Event $event) {
+        Event::on(Element::class, Element::EVENT_AFTER_RESTORE, function (Event $event) {
             $this->indexer->handleAfterRestoreEvent($event);
         });
-        Event::on(Entry::class, Entry::EVENT_AFTER_DELETE, function (Event $event) {
+        Event::on(Element::class, Element::EVENT_AFTER_DELETE, function (Event $event) {
             $this->indexer->handleAfterDeleteEvent($event);
         });
 
