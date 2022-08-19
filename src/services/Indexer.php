@@ -280,7 +280,7 @@ class Indexer extends Component
      */
     public function setIndexSettings(string $index, array $settings, $closeAndOpenIndex = false) {
         if ($closeAndOpenIndex) {
-            // updating non dynamic settings requires index closing (and opening)
+            // updating non-dynamic settings requires index closing (and opening)
             $this->client->indices()->close(['index' => $index]);
         }
 
@@ -290,7 +290,7 @@ class Indexer extends Component
         ]);
 
         if ($closeAndOpenIndex) {
-            // updating non dynamic settings requires index closing (and opening)
+            // updating non-dynamic settings requires index closing (and opening)
             $this->client->indices()->open(['index' => $index]);
         }
     }
@@ -457,19 +457,14 @@ class Indexer extends Component
         switch (get_class($element)) {
             case Entry::class:
                 /** @var Entry $element */
-                $snakeHandle = StringHelper::toSnakeCase($element->getSection()->handle);
-                break;
+                return strtolower($this->indexPrefix . '_' . StringHelper::toSnakeCase($element->getSection()->handle) . '_' . $site->language);
 
             case Category::class:
                 /** @var Category $element */
-                $snakeHandle = StringHelper::toSnakeCase($element->getGroup()->handle);
-                break;
+                return strtolower($this->indexPrefix . '_cat_' . StringHelper::toSnakeCase($element->getGroup()->handle) . '_' . $site->language);
 
             default:
-                $snakeHandle = '';
-                break;
+                return strtolower($this->indexPrefix . '_' . $site->language);
         }
-
-        return strtolower($this->indexPrefix . '_' . $snakeHandle . '_' . $site->language);
     }
 }
