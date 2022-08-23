@@ -23,6 +23,12 @@
 
 <hr />
 
+<p>
+    <strong>Ping status: </strong><span class="status {{ connectionStatus is same as(true) ? 'live' : 'expired' }}"></span>({{ connectionStatus is same as(true) ? 'Connection successful' : connectionStatus }})
+</p>
+
+<hr />
+
 {% set reIndexTriggered = triggered is defined and triggered == 're-index-triggered' %}
 
 <form class="utility" method="post" accept-charset="UTF-8" enctype="multipart/form-data" action="{{ actionUrl }}">
@@ -41,7 +47,8 @@
         {{ forms.checkboxField({
             label: 'Delete complete index (WARNING: including settings and mappings!)',
             id: 'deleteAll',
-            name: 'deleteAll'
+            name: 'deleteAll',
+            disabled: connectionStatus is not same as(true)
         }) }}
     {% endif %}
 
@@ -54,21 +61,21 @@
                 &rarr; See <a href="{{ cpUrl('utilities/queue-manager') }}">Queue Manager</a>.
             </p>
         {% else %}
-            <input type="submit" class="btn submit" value="Re-index" />
+            <input type="submit" class="btn submit{% if connectionStatus is not same as(true) %} disabled{% endif %}" value="Re-index" {% if connectionStatus is not same as(true) %}disabled{% endif %}/>
         {% endif %}
     </div>
 </form>
 
 {% if craft.app.user.isAdmin or craft.app.user.can('elasticaIndexTemplates') %}
-<hr />
-<h3>Apply index template from plugin settings</h3>
-<p>(Admin only or users with elastica index templates permission)</p>
-<form class="utility" method="post" accept-charset="UTF-8" enctype="multipart/form-data" action="{{ actionUrl }}">
-    {{ forms.hidden({name: 'task', value: 'index-template'}) }}
-    {{ csrfInput() }}
+    <hr />
+    <h3>Apply index template from plugin settings</h3>
+    <p>(Admin only or users with elastica index templates permission)</p>
+    <form class="utility" method="post" accept-charset="UTF-8" enctype="multipart/form-data" action="{{ actionUrl }}">
+        {{ forms.hidden({name: 'task', value: 'index-template'}) }}
+        {{ csrfInput() }}
 
-    <div class="buttons">
-        <input type="submit" class="btn submit" value="Apply Index Template" />
-    </div>
-</form>
+        <div class="buttons">
+            <input type="submit" class="btn submit{% if connectionStatus is not same as(true) %} disabled{% endif %}" value="Apply Index Template" {% if connectionStatus is not same as(true) %}disabled{% endif %}/>
+        </div>
+    </form>
 {% endif %}

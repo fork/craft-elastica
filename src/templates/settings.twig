@@ -46,6 +46,10 @@
     required: true
 }) }}
 
+<p>
+    <strong>Ping status: </strong><span class="status {{ connectionStatus is same as(true) ? 'live' : 'expired' }}"></span>({{ connectionStatus is same as(true) ? 'Connection successful' : connectionStatus }})
+</p>
+
 <hr />
 
 {{ forms.textField({

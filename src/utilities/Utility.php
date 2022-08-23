@@ -79,6 +79,7 @@ class Utility extends BaseUtility
         $settings = Elastica::$plugin->getSettings();
 
         return Craft::$app->getView()->renderTemplate('elastica/utilities', [
+            'connectionStatus' => Elastica::$plugin->indexer->getConnectionStatus(),
             'triggered' => $triggered,
             'indexTemplateName' => $settings->indexTemplateName,
             'indexTemplate' => $settings->indexTemplate,

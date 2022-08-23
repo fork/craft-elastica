@@ -180,6 +180,7 @@ class Elastica extends Plugin
         return Craft::$app->view->renderTemplate(
             'elastica/settings',
             [
+                'connectionStatus' => $this->indexer->getConnectionStatus(),
                 'settings' => $this->getSettings(),
             ]
         );

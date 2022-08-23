@@ -21,6 +21,7 @@ use craft\models\Site;
 use craft\queue\QueueInterface;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
+use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use Exception;
 use fork\elastica\Elastica;
 use fork\elastica\events\IndexerInitEvent;
@@ -95,6 +96,20 @@ class Indexer extends Component
             $this->trigger(self::EVENT_INDEXER_INIT, $event);
             $this->sectionHandles = $event->getSectionHandles();
             $this->categoryGroupHandles = $event->getCategoryGroupHandles();
+        }
+    }
+
+    /**
+     * Returns the connection status
+     *
+     * @return bool|string
+     */
+    public function getConnectionStatus()
+    {
+        try {
+            return $this->client->ping();
+        } catch (NoNodesAvailableException $e) {
+            return $e->getMessage();
         }
     }
 

@@ -17,7 +17,6 @@ use fork\elastica\queue\ReindexJob;
  */
 class Utility extends Component
 {
-
     /**
      * Handles a utility form submit (e.g. for re-indexing entries in Elasticsearch) and returns the triggered task's name
      * or an empty string if nothing could be triggered at all.
