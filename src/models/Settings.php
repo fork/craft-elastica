@@ -56,6 +56,13 @@ class Settings extends Model
      */
     public $indexTemplate;
 
+    /**
+     * Search templates for elasticsearch
+     *
+     * @var string
+     */
+    public $searchTemplates;
+
     // Public Methods
     // =========================================================================
 
@@ -82,7 +89,19 @@ class Settings extends Model
                     $this->addError($attribute, $exception->getMessage());
                 }
             }],
+            ['searchTemplates', function ($attribute, $params, $validator) {
+                try {
+                    if ($this->$attribute) {
+                        foreach ($this->$attribute as $row)
+                            Json::decode($row[1]);
+                        if (!empty($row[2]))  {
+                            Json::decode($row[2]);
+                        }
+                    }
+                } catch (\Exception $exception) {
+                    $this->addError($attribute, $exception->getMessage());
+                }
+            }],
         ];
     }
 }
-

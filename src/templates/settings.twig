@@ -98,3 +98,35 @@
    }
 }
 </pre>
+
+<hr />
+
+{{ forms.editableTableField({
+    label: 'Search templates',
+    instructions: 'You can create and update search templates here',
+    id: 'searchTemplates',
+    name: 'searchTemplates',
+    cols: [
+        {
+            heading : 'Handle',
+            info: 'Handle for the search template, it can then be accessed via <index-name>/_search/<template-handle>',
+            type: 'singleline',
+            code: true,
+        },
+        {
+            heading : 'Query',
+            info: 'The query for the search template',
+            type: 'multiline',
+            code: true,
+        },
+        {
+            heading : 'Params',
+            info: 'The querys parameters (optional)',
+            type: 'multiline',
+            code: true,
+        }
+    ],
+    rows: settings.searchTemplates,
+    required: false,
+    errors: settings.getErrors('searchTemplates'),
+}) }}
