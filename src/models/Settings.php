@@ -92,10 +92,14 @@ class Settings extends Model
             ['searchTemplates', function ($attribute, $params, $validator) {
                 try {
                     if ($this->$attribute) {
-                        foreach ($this->$attribute as $row)
+                        foreach ($this->$attribute as $row) {
+                            if (empty($row[0])) {
+                                throw new \Exception("Handle must not be empty");
+                            }
                             Json::decode($row[1]);
-                        if (!empty($row[2]))  {
-                            Json::decode($row[2]);
+                            if ( ! empty($row[2])) {
+                                Json::decode($row[2]);
+                            }
                         }
                     }
                 } catch (\Exception $exception) {
