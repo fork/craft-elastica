@@ -325,6 +325,29 @@ class Indexer extends Component
     }
 
     /**
+     * Saves/updates a search template in elasticsearch
+     *
+     * @param string $name
+     * @param array $templateArray
+     * @return array
+     */
+    public function saveSearchTemplate(string $handle, array $query, array $params = null) {
+        return $this->client->putScript([
+            'id' => $handle,
+            'body' => [
+                'script' =>
+                    [
+                        'lang' => 'mustache',
+                        'source' => [
+                            'query' => $query
+                        ],
+                        'params' => $params
+                    ]
+            ]
+        ]);
+    }
+
+    /**
      * Handles the EVENT_AFTER_SAVE event for elements.
      *
      * @param \craft\events\ModelEvent $event

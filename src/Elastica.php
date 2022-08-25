@@ -119,6 +119,9 @@ class Elastica extends Plugin
                     'elasticaIndexTemplates' => [
                         'label' => 'Set index templates in elasticsearch',
                     ],
+                    'elasticaSearchTemplates' => [
+                        'label' => 'Add/update search templates in elasticsearch',
+                    ],
                 ];
             }
         );

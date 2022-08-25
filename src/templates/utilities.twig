@@ -79,3 +79,17 @@
         </div>
     </form>
 {% endif %}
+
+{% if craft.app.user.isAdmin or craft.app.user.can('elasticaSearchTemplates') %}
+    <hr />
+    <h3>Save/update search templates from plugin settings</h3>
+    <p>(Admin only or users with elastica search templates permission)</p>
+    <form class="utility" method="post" accept-charset="UTF-8" enctype="multipart/form-data" action="{{ actionUrl }}">
+        {{ forms.hidden({name: 'task', value: 'search-templates'}) }}
+        {{ csrfInput() }}
+
+        <div class="buttons">
+            <input type="submit" class="btn submit{% if connectionStatus is not same as(true) %} disabled{% endif %}" value="Apply Index Template" {% if connectionStatus is not same as(true) %}disabled{% endif %}/>
+        </div>
+    </form>
+{% endif %}

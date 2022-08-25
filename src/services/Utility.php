@@ -37,6 +37,10 @@ class Utility extends Component
             return $this->saveIndexTemplate();
         }
 
+        if ($request->getIsPost() && $request->getBodyParam('task') == 'search-templates' && Craft::$app->user->checkPermission('elasticaSearchTemplates')) {
+            return $this->saveSearchTemplates();
+        }
+
         return '';
     }
 
@@ -79,6 +83,34 @@ class Utility extends Component
             $templateArray = Json::decode($settings->indexTemplate);
             $elastica->indexer->saveIndexTemplate($settings->indexTemplateName, $templateArray);
             $this->setNotice('Index Template saved!');
+        } catch (\Exception $exception) {
+            $this->setError($exception->getMessage());
+        }
+
+        return '';
+    }
+
+    /**
+     * Saves index template to plugin settings and elasticsearch
+     *
+     * @return string
+     *
+     * @throws \craft\errors\MissingComponentException
+     */
+    protected function saveSearchTemplates(): string
+    {
+        $elastica = Elastica::$plugin;
+        $settings = $elastica->getSettings();
+
+        try {
+            foreach ($settings->searchTemplates as $row) {
+                $templateHandle = $row[0];
+                $templateQuery = Json::decode($row[1]);
+                $templateParams = !empty($row[2]) ? Json::decode($row[2]) : null;
+                $elastica->indexer->saveSearchTemplate($templateHandle, $templateQuery, $templateParams);
+            }
+
+            $this->setNotice('Search Templates saved!');
         } catch (\Exception $exception) {
             $this->setError($exception->getMessage());
         }
