@@ -105,9 +105,9 @@ class Utility extends Component
         try {
             foreach ($settings->searchTemplates as $row) {
                 $templateHandle = $row[0];
-                $templateQuery = Json::decode($row[1]);
+                $templateSource = Json::decode($row[1]);
                 $templateParams = !empty($row[2]) ? Json::decode($row[2]) : null;
-                $elastica->indexer->saveSearchTemplate($templateHandle, $templateQuery, $templateParams);
+                $elastica->indexer->saveSearchTemplate($templateHandle, $templateSource, $templateParams);
             }
 
             $this->setNotice('Search Templates saved!');

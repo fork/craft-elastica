@@ -331,16 +331,14 @@ class Indexer extends Component
      * @param array $templateArray
      * @return array
      */
-    public function saveSearchTemplate(string $handle, array $query, array $params = null) {
+    public function saveSearchTemplate(string $handle, array $source, array $params = null) {
         return $this->client->putScript([
             'id' => $handle,
             'body' => [
                 'script' =>
                     [
                         'lang' => 'mustache',
-                        'source' => [
-                            'query' => $query
-                        ],
+                        'source' => $source,
                         'params' => $params
                     ]
             ]
