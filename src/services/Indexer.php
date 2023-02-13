@@ -73,7 +73,7 @@ class Indexer extends Component
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         $env = Craft::$app->config->env;
         $pluginSettings = Elastica::$plugin->getSettings();

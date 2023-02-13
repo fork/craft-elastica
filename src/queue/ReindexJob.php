@@ -21,7 +21,7 @@ class ReindexJob extends BaseJob
      *
      * @return string|null
      */
-    protected function defaultDescription()
+    protected function defaultDescription(): ?string
     {
         return 'Elastica: Re-index Elasticsearch';
     }
@@ -29,7 +29,7 @@ class ReindexJob extends BaseJob
     /**
      * @param \yii\queue\Queue|QueueInterface $queue The queue the job belongs to
      */
-    public function execute($queue)
+    public function execute($queue): void
     {
         $this->setProgress($queue, 0);
         Elastica::$plugin->indexer->reIndex($this, $queue, $this->deleteAll);

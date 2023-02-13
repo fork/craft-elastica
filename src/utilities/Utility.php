@@ -22,7 +22,7 @@ class Utility extends BaseUtility
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -56,7 +56,7 @@ class Utility extends BaseUtility
      *
      * @return string|null The path to the utility SVG icon
      */
-    public static function iconPath()
+    public static function iconPath(): ?string
     {
         return Craft::getAlias("@fork/elastica/assetbundles/elastica/dist/img/Elastica-icon.svg");
     }
