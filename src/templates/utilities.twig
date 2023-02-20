@@ -18,7 +18,7 @@
 {% set logoUrl = view.getAssetManager().getPublishedUrl('@fork/elastica/assetbundles/elastica/dist', true) ~ '/img/Elastica-icon.svg' %}
 {% set actionUrl = actionUrl is defined ? actionUrl : cpUrl(craft.app.request.getPathInfo()) %}
 
-<img src="{{ logoUrl }}" height="60" alt="Elastica by Fork" style="float: left; margin-right: 15px;" />
+<img class="elastica-icon" src="{{ logoUrl }}" alt="Elastica by Fork" />
 <h2>Elastica<br />by Fork</h2>
 
 <hr />
