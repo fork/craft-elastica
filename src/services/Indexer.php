@@ -16,6 +16,7 @@ use craft\base\Element;
 use craft\elements\Category;
 use craft\elements\Entry;
 use craft\events\ModelEvent;
+use craft\helpers\ElementHelper;
 use craft\helpers\StringHelper;
 use craft\models\Site;
 use craft\queue\QueueInterface;
