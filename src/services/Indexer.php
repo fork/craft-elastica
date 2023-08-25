@@ -360,6 +360,11 @@ class Indexer extends Component
         /** @var Element $element */
         $element = $event->sender;
 
+        if (ElementHelper::isDraftOrRevision($element)) {
+            // don’t do anything with drafts or revisions
+            return;
+        }
+
         if ($this->isElementToBeIndexed($element)) {
             if ($this->isElementLive($element)) {
                 $this->index($element);
@@ -427,7 +432,7 @@ class Indexer extends Component
         switch (get_class($element)) {
             case Entry::class:
                 /** @var Entry $element */
-                return $this->isSectionToBeIndexed($element->getSection()->handle) && !$element->getIsDraft() && !$element->getIsRevision();
+                return $this->isSectionToBeIndexed($element->getSection()->handle);
 
             case Category::class:
                 /** @var Category $element */
