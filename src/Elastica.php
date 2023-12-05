@@ -115,13 +115,16 @@ class Elastica extends Plugin
             UserPermissions::class,
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             function(RegisterUserPermissionsEvent $event) {
-                $event->permissions['Elastica'] = [
-                    'elasticaIndexTemplates' => [
-                        'label' => 'Set index templates in elasticsearch',
-                    ],
-                    'elasticaSearchTemplates' => [
-                        'label' => 'Add/update search templates in elasticsearch',
-                    ],
+                $event->permissions[] = [
+                    'heading' => 'Elastica',
+                    'permissions' => [
+                        'elasticaIndexTemplates' => [
+                            'label' => 'Set index templates in elasticsearch',
+                        ],
+                        'elasticaSearchTemplates' => [
+                            'label' => 'Add/update search templates in elasticsearch',
+                        ],
+                    ]
                 ];
             }
         );
