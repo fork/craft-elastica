@@ -571,6 +571,7 @@ class Indexer extends Component
                 break;
         }
 
+        $parts[] = StringHelper::toLowerCase($site->handle);
         $parts[] = StringHelper::toLowerCase($site->language);
 
         return join('_', $parts);
