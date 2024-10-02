@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpMissingReturnTypeInspection */
+<?php /** @noinspection PhpUnused */
+/** @noinspection PhpMissingReturnTypeInspection */
 
 /**
  * Elasticsearch plugin for Craft CMS 3.x
@@ -60,7 +61,7 @@ class ElasticsearchController extends Controller
             return $this->asJson(true);
         } catch (Exception $e) {
             Craft::$app->response->setStatusCode(500);
-            return $this->asErrorJson($e->getMessage());
+            return $this->asFailure($e->getMessage());
         }
     }
 }

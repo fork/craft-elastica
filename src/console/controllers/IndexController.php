@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpMissingReturnTypeInspection */
+<?php /** @noinspection PhpUnused */
+
+/** @noinspection PhpMissingReturnTypeInspection */
 
 namespace fork\elastica\console\controllers;
 

@@ -59,7 +59,7 @@ class Settings extends Model
     /**
      * Search templates for elasticsearch
      *
-     * @var string
+     * @var array
      */
     public $searchTemplates;
 

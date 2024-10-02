@@ -4,7 +4,13 @@ namespace fork\elastica\utilities;
 
 use Craft;
 use craft\base\Utility as BaseUtility;
+use craft\errors\MissingComponentException;
 use fork\elastica\Elastica;
+use fork\elastica\services\Indexer;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
+use yii\base\Exception;
 
 /**
  * The Utility class represents the plugin's utility as being accessible in the Craft CP's "utilities" section.
@@ -15,9 +21,9 @@ class Utility extends BaseUtility
 {
 
     /**
-     * @var \fork\elastica\services\Indexer
+     * @var Indexer
      */
-    protected $indexer;
+    protected Indexer $indexer;
 
     /**
      * @inheritdoc
@@ -66,11 +72,11 @@ class Utility extends BaseUtility
      *
      * @return string
      *
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     * @throws \craft\errors\MissingComponentException
-     * @throws \yii\base\Exception
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws MissingComponentException
+     * @throws Exception
      */
     public static function contentHtml(): string
     {
