@@ -10,7 +10,6 @@
 
 namespace fork\elastica\assetbundles\elastica;
 
-use Craft;
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
 

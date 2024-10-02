@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpMissingReturnTypeInspection */
+
 /**
  * Elasticsearch plugin for Craft CMS 3.x
  *
@@ -10,10 +11,14 @@
 
 namespace fork\elastica\controllers;
 
+use Exception;
 use fork\elastica\Elastica;
 
 use Craft;
 use craft\web\Controller;
+use yii\web\BadRequestHttpException;
+use yii\web\ForbiddenHttpException;
+use yii\web\Response;
 
 /**
  * Elasticsearch Controller
@@ -41,6 +46,11 @@ class ElasticsearchController extends Controller
     // Public Methods
     // =========================================================================
 
+    /**
+     * @return Response
+     * @throws BadRequestHttpException
+     * @throws ForbiddenHttpException
+     */
     public function actionReindex() {
         $this->requirePostRequest();
         $this->requireAdmin();
@@ -48,7 +58,7 @@ class ElasticsearchController extends Controller
         try {
             Elastica::$plugin->indexer->reIndex();
             return $this->asJson(true);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Craft::$app->response->setStatusCode(500);
             return $this->asErrorJson($e->getMessage());
         }

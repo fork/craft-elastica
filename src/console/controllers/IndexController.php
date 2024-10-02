@@ -1,11 +1,13 @@
-<?php
+<?php /** @noinspection PhpMissingReturnTypeInspection */
 
 namespace fork\elastica\console\controllers;
 
+use craft\errors\MissingComponentException;
 use fork\elastica\Elastica;
 
 use Craft;
 use yii\base\Behavior;
+use yii\base\InvalidConfigException;
 use yii\console\Controller;
 
 /**
@@ -35,31 +37,15 @@ use yii\console\Controller;
  */
 class IndexController extends Controller
 {
-  // Public Methods
-  // =========================================================================
-
-  /**
-   * Handle mm360features/api console commands
-   *
-   * The first line of this method docblock is displayed as the description
-   * of the Console Command in ./craft help
-   *
-   * @return mixed
-   */
-//    public function actionIndex()
-//    {
-//        $result = 'something';
-//
-//        echo "Welcome to the console ApiController actionIndex() method\n";
-//
-//        return $result;
-//    }
+    // Public Methods
+    // =========================================================================
 
     /**
      * Delete Index and Reindex
      *
-     * @return mixed
-     * @throws \yii\base\InvalidConfigException
+     * @return void
+     * @throws MissingComponentException
+     * @throws InvalidConfigException
      */
     public function actionReindex()
     {
