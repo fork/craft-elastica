@@ -311,7 +311,7 @@ class Indexer extends Component
 
                 // either execute the re-index step using passed job and queue …
                 if (!empty($reindexJob) && !empty($queue)) {
-                    $progress = $siteIndex / $sitesCount + ($entriesCount + $categoryIndex + $assetIndex) / ($entriesCount + $categoriesCount + $assetsCount) / $sitesCount;
+                    $progress = $siteIndex / $sitesCount + ($entriesCount + $categoriesCount + $assetIndex) / ($entriesCount + $categoriesCount + $assetsCount) / $sitesCount;
                     $label = $site->name . ' | ' . $asset->filename;
                     $reindexJob->step($queue, $reindexStep, $progress, $label);
                 }
