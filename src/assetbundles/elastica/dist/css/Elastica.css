@@ -9,3 +9,9 @@
  * @package   Elastica
  * @since     1.0.0
  */
+.elastica-icon {
+  float: left;
+  height: 60px;
+  margin-right: 15px;
+  width: 60px;
+}

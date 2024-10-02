@@ -6,6 +6,7 @@
 
 namespace fork\elastica\events;
 
+use craft\elements\Entry;
 use yii\base\Event;
 
 /**
@@ -20,7 +21,8 @@ class IndexEvent extends Event
     // =========================================================================
 
     /**
-     * @var \craft\elements\Entry
+     * @var Entry
+     * @deprecated use $sender instead
      */
     public $entry;
 

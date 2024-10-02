@@ -4,6 +4,7 @@ namespace fork\elastica\services;
 
 use Craft;
 use craft\base\Component;
+use craft\errors\MissingComponentException;
 use craft\helpers\Json;
 use fork\elastica\Elastica;
 use fork\elastica\queue\ReindexJob;
@@ -13,18 +14,17 @@ use fork\elastica\queue\ReindexJob;
  *
  * @package fork\elastica\services
  *
- * @see \fork\elastica\services\Indexer
+ * @see Indexer
  */
 class Utility extends Component
 {
-
     /**
      * Handles a utility form submit (e.g. for re-indexing entries in Elasticsearch) and returns the triggered task's name
      * or an empty string if nothing could be triggered at all.
      *
      * @return string
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     public function handleUtilityFormSubmit(): string
     {
@@ -38,6 +38,10 @@ class Utility extends Component
             return $this->saveIndexTemplate();
         }
 
+        if ($request->getIsPost() && $request->getBodyParam('task') == 'search-templates' && Craft::$app->user->checkPermission('elasticaSearchTemplates')) {
+            return $this->saveSearchTemplates();
+        }
+
         return '';
     }
 
@@ -47,7 +51,7 @@ class Utility extends Component
      * @param bool $deleteAll delete all including settings and mappings
      * @return string
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     protected function triggerReindex($deleteAll = false): string
     {
@@ -69,7 +73,7 @@ class Utility extends Component
      *
      * @return string
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     protected function saveIndexTemplate(): string
     {
@@ -88,11 +92,39 @@ class Utility extends Component
     }
 
     /**
+     * Saves index template to plugin settings and elasticsearch
+     *
+     * @return string
+     *
+     * @throws MissingComponentException
+     */
+    protected function saveSearchTemplates(): string
+    {
+        $elastica = Elastica::$plugin;
+        $settings = $elastica->getSettings();
+
+        try {
+            foreach ($settings->searchTemplates as $row) {
+                $templateHandle = $row[0];
+                $templateSource = Json::decode($row[1]);
+                $templateParams = !empty($row[2]) ? Json::decode($row[2]) : null;
+                $elastica->indexer->saveSearchTemplate($templateHandle, $templateSource, $templateParams);
+            }
+
+            $this->setNotice('Search Templates saved!');
+        } catch (\Exception $exception) {
+            $this->setError($exception->getMessage());
+        }
+
+        return '';
+    }
+
+    /**
      * Sets the given message to be displayed for user.
      *
      * @param string $message
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     protected function setNotice(string $message)
     {
@@ -104,7 +136,7 @@ class Utility extends Component
      *
      * @param string $message
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     protected function setError(string $message)
     {
