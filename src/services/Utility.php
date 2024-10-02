@@ -4,6 +4,7 @@ namespace fork\elastica\services;
 
 use Craft;
 use craft\base\Component;
+use craft\errors\MissingComponentException;
 use craft\helpers\Json;
 use fork\elastica\Elastica;
 use fork\elastica\queue\ReindexJob;
@@ -13,7 +14,7 @@ use fork\elastica\queue\ReindexJob;
  *
  * @package fork\elastica\services
  *
- * @see \fork\elastica\services\Indexer
+ * @see Indexer
  */
 class Utility extends Component
 {
@@ -23,7 +24,7 @@ class Utility extends Component
      *
      * @return string
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     public function handleUtilityFormSubmit(): string
     {
@@ -50,7 +51,7 @@ class Utility extends Component
      * @param bool $deleteAll delete all including settings and mappings
      * @return string
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     protected function triggerReindex($deleteAll = false): string
     {
@@ -72,7 +73,7 @@ class Utility extends Component
      *
      * @return string
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     protected function saveIndexTemplate(): string
     {
@@ -95,7 +96,7 @@ class Utility extends Component
      *
      * @return string
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     protected function saveSearchTemplates(): string
     {
@@ -123,7 +124,7 @@ class Utility extends Component
      *
      * @param string $message
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     protected function setNotice(string $message)
     {
@@ -135,7 +136,7 @@ class Utility extends Component
      *
      * @param string $message
      *
-     * @throws \craft\errors\MissingComponentException
+     * @throws MissingComponentException
      */
     protected function setError(string $message)
     {

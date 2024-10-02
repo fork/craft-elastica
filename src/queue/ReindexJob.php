@@ -3,9 +3,12 @@
 namespace fork\elastica\queue;
 
 use Closure;
+use craft\errors\MissingComponentException;
 use craft\queue\BaseJob;
 use craft\queue\QueueInterface;
 use fork\elastica\Elastica;
+use yii\base\InvalidConfigException;
+use yii\queue\Queue;
 
 /**
  * The ReindexJob class represents re-index processes being added to Craft's job queue.
@@ -27,7 +30,9 @@ class ReindexJob extends BaseJob
     }
 
     /**
-     * @param \yii\queue\Queue|QueueInterface $queue The queue the job belongs to
+     * @param Queue|QueueInterface $queue The queue the job belongs to
+     * @throws MissingComponentException
+     * @throws InvalidConfigException
      */
     public function execute($queue): void
     {
@@ -39,8 +44,8 @@ class ReindexJob extends BaseJob
     /**
      * Executes a single step of the current job and sets the step's progress and label.
      *
-     * @param \craft\queue\QueueInterface $queue the executed queue
-     * @param \Closure $closure the background job's step implementation
+     * @param QueueInterface $queue the executed queue
+     * @param Closure $closure the background job's step implementation
      * @param float $progress the progress this step corresponds to, must be a value between 0 and 1
      * @param string|null $label label to be printed next to progress as additional information in the Queue Manager
      */
