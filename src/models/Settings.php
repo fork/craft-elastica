@@ -11,8 +11,7 @@
 namespace fork\elastica\models;
 
 use craft\helpers\Json;
-use fork\elastica\Elastica;
-use Craft;
+use Exception;
 use craft\base\Model;
 
 /**
@@ -39,28 +38,28 @@ class Settings extends Model
      *
      * @var mixed
      */
-    public $hosts;
+    public mixed $hosts;
 
     /**
      * Name for the index template for elasticsearch
      *
      * @var string
      */
-    public $indexTemplateName;
+    public string $indexTemplateName;
 
     /**
      * An index template for elasticsearch
      *
      * @var string
      */
-    public $indexTemplate;
+    public string $indexTemplate;
 
     /**
      * Search templates for elasticsearch
      *
      * @var array
      */
-    public $searchTemplates;
+    public array $searchTemplates;
 
     // Public Methods
     // =========================================================================
@@ -84,7 +83,7 @@ class Settings extends Model
                     if ($this->$attribute) {
                         Json::decode($this->$attribute);
                     }
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     $this->addError($attribute, $exception->getMessage());
                 }
             }],
@@ -93,7 +92,7 @@ class Settings extends Model
                     if ($this->$attribute) {
                         foreach ($this->$attribute as $row) {
                             if (empty($row[0])) {
-                                throw new \Exception("Handle must not be empty");
+                                throw new Exception("Handle must not be empty");
                             }
                             Json::decode($row[1]);
                             if (! empty($row[2])) {
@@ -101,7 +100,7 @@ class Settings extends Model
                             }
                         }
                     }
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     $this->addError($attribute, $exception->getMessage());
                 }
             }],

@@ -29,6 +29,6 @@ class IndexEvent extends Event
     /**
      * @var array
      */
-    public $indexData;
+    public array $indexData = [];
 
 }
