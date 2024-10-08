@@ -49,7 +49,6 @@ use yii\base\InvalidConfigException;
  */
 class Indexer extends Component
 {
-
     // Public Methods
     // =========================================================================
 
@@ -58,8 +57,8 @@ class Indexer extends Component
     /** @var string */
     private string $indexPrefix = 'craft';
 
-    const EVENT_INDEXER_INIT = 'indexerInit';
-    const EVENT_BEFORE_INDEX_DATA = 'beforeIndexData';
+    public const EVENT_INDEXER_INIT = 'indexerInit';
+    public const EVENT_BEFORE_INDEX_DATA = 'beforeIndexData';
 
     /**
      * list of section handles to consider for (re-)indexing entries

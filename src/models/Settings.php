@@ -12,7 +12,6 @@ namespace fork\elastica\models;
 
 use craft\helpers\Json;
 use fork\elastica\Elastica;
-
 use Craft;
 use craft\base\Model;
 
@@ -97,7 +96,7 @@ class Settings extends Model
                                 throw new \Exception("Handle must not be empty");
                             }
                             Json::decode($row[1]);
-                            if ( ! empty($row[2])) {
+                            if (! empty($row[2])) {
                                 Json::decode($row[2]);
                             }
                         }

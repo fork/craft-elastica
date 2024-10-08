@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUnused */
+<?php
+
+/** @noinspection PhpUnused */
 
 /** @noinspection PhpMissingReturnTypeInspection */
 
@@ -6,7 +8,6 @@ namespace fork\elastica\console\controllers;
 
 use craft\errors\MissingComponentException;
 use fork\elastica\Elastica;
-
 use Craft;
 use yii\base\Behavior;
 use yii\base\InvalidConfigException;
@@ -64,5 +65,7 @@ class IndexController extends Controller
 
 class ConsoleRequestTokenBehaviour extends Behavior
 {
-    public function getToken() {}
+    public function getToken()
+    {
+    }
 }

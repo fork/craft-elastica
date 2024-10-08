@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUnused */
+<?php
+
+/** @noinspection PhpUnused */
 /** @noinspection PhpMissingReturnTypeInspection */
 
 /**
@@ -14,7 +16,6 @@ namespace fork\elastica\controllers;
 
 use Exception;
 use fork\elastica\Elastica;
-
 use Craft;
 use craft\web\Controller;
 use yii\web\BadRequestHttpException;
@@ -43,7 +44,6 @@ use yii\web\Response;
  */
 class ElasticsearchController extends Controller
 {
-
     // Public Methods
     // =========================================================================
 
@@ -52,7 +52,8 @@ class ElasticsearchController extends Controller
      * @throws BadRequestHttpException
      * @throws ForbiddenHttpException
      */
-    public function actionReindex() {
+    public function actionReindex()
+    {
         $this->requirePostRequest();
         $this->requireAdmin();
 

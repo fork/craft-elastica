@@ -11,7 +11,6 @@ use yii\base\Event;
  */
 class IndexerInitEvent extends Event
 {
-
     /**
      * list of section handles whose entries need to be (re-)indexed by the plugin
      *

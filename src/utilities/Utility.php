@@ -19,7 +19,6 @@ use yii\base\Exception;
  */
 class Utility extends BaseUtility
 {
-
     /**
      * @var Indexer
      */

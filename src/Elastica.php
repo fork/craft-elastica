@@ -50,7 +50,6 @@ use yii\base\Exception;
  */
 class Elastica extends Plugin
 {
-
     // Static Properties
     // =========================================================================
 
@@ -119,7 +118,7 @@ class Elastica extends Plugin
         Event::on(
             UserPermissions::class,
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
-            function(RegisterUserPermissionsEvent $event) {
+            function (RegisterUserPermissionsEvent $event) {
                 $event->permissions[] = [
                     'heading' => 'Elastica',
                     'permissions' => [
