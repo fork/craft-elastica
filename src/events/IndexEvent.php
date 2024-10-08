@@ -6,7 +6,6 @@
 
 namespace fork\elastica\events;
 
-use craft\elements\Entry;
 use yii\base\Event;
 
 /**
@@ -17,18 +16,8 @@ use yii\base\Event;
  */
 class IndexEvent extends Event
 {
-    // Properties
-    // =========================================================================
-
-    /**
-     * @var Entry
-     * @deprecated use $sender instead
-     */
-    public $entry;
-
     /**
      * @var array
      */
     public array $indexData = [];
-
 }

@@ -141,7 +141,6 @@ class Indexer extends Component
         // Fire a 'beforeIndexData' event
         if ($this->hasEventHandlers(self::EVENT_BEFORE_INDEX_DATA)) {
             $event = new IndexEvent([
-                'entry' => $element, // TODO: remove in future release and use sender alone
                 'sender' => $element,
                 'indexData' => $content,
             ]);
