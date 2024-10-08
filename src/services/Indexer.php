@@ -186,7 +186,7 @@ class Indexer extends Component
         foreach (Craft::$app->sites->getAllSites() as $site) {
             $siteElement = $element;
 
-            if ($siteElement && $isMultiSite && !$force) {
+            if ($isMultiSite && !$force) {
                 $siteElement = Craft::$app->elements->getElementById($siteElement->id, get_class($siteElement), $site->id);
             }
 
@@ -221,7 +221,7 @@ class Indexer extends Component
     }
 
     /**
-     * Reindexes the elements.
+     * Reindex the elements.
      *
      * @param ReindexJob|null $reindexJob
      * @param QueueInterface|null $queue
