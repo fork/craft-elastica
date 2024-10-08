@@ -61,7 +61,7 @@ class Utility extends BaseUtility
      *
      * @return string|null The path to the utility SVG icon
      */
-    public static function iconPath(): ?string
+    public static function icon(): ?string
     {
         return Craft::getAlias("@fork/elastica/assetbundles/elastica/dist/img/Elastica-icon.svg");
     }
