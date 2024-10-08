@@ -24,7 +24,7 @@
         }
     ],
     "require": {
-	"php": "^8.0",
+	"php": "^8.2",
         "craftcms/cms": "^5.0.0",
         "elasticsearch/elasticsearch": "^7.0"
     },
