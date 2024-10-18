@@ -17,7 +17,7 @@ use yii\base\Event;
 class IndexEvent extends Event
 {
     /**
-     * @var array
+     * @var array|null
      */
-    public array $indexData = [];
+    public ?array $indexData = null;
 }
