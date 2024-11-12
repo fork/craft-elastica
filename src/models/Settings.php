@@ -38,28 +38,28 @@ class Settings extends Model
      *
      * @var mixed
      */
-    public mixed $hosts;
+    public mixed $hosts = [];
 
     /**
      * Name for the index template for elasticsearch
      *
      * @var string
      */
-    public string $indexTemplateName;
+    public string $indexTemplateName = '';
 
     /**
      * An index template for elasticsearch
      *
      * @var string
      */
-    public string $indexTemplate;
+    public string $indexTemplate = '';
 
     /**
      * Search templates for elasticsearch
      *
      * @var array
      */
-    public array $searchTemplates;
+    public array $searchTemplates = [];
 
     // Public Methods
     // =========================================================================
