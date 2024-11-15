@@ -17,7 +17,7 @@ use yii\queue\Queue;
  */
 class ReindexJob extends BaseJob
 {
-    public $deleteAll = false;
+    public bool $deleteAll = false;
 
     /**
      * Returns a default description for [[getDescription()]].
@@ -49,7 +49,7 @@ class ReindexJob extends BaseJob
      * @param float $progress the progress this step corresponds to, must be a value between 0 and 1
      * @param string|null $label label to be printed next to progress as additional information in the Queue Manager
      */
-    public function step(QueueInterface $queue, Closure $closure, float $progress = 0.0, string $label = null)
+    public function step(QueueInterface $queue, Closure $closure, float $progress = 0.0, string $label = null): void
     {
         // ensure progress is a float between 0 and 1
         $progress = !is_numeric($progress) || $progress < 0 ? 0.0 : ($progress > 1 ? 1.0 : floatval($progress));

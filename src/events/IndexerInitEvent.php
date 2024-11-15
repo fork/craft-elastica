@@ -11,27 +11,26 @@ use yii\base\Event;
  */
 class IndexerInitEvent extends Event
 {
-
     /**
      * list of section handles whose entries need to be (re-)indexed by the plugin
      *
      * @var string[]
      */
-    protected $sectionHandles = [];
+    protected array $sectionHandles = [];
 
     /**
      * list of group handles whose categories need to be (re-)indexed by the plugin
      *
      * @var string[]
      */
-    protected $categoryGroupHandles = [];
+    protected array $categoryGroupHandles = [];
 
     /**
      * list of volume handles whose assets need to be (re-)indexed by the plugin
      *
      * @var string[]
      */
-    protected $volumeHandles = [];
+    protected array $volumeHandles = [];
 
     /**
      * Returns the section handles.

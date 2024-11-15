@@ -16,6 +16,7 @@
 .cache
 .DS_Store
 .idea
+.php-cs-fixer.cache
 .project
 .settings
 *.esproj

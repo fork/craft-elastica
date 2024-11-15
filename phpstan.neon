@@ -1,0 +1,23 @@
+includes:
+    - vendor/craftcms/phpstan/phpstan.neon
+
+parameters:
+    level: 5
+    paths:
+        - %currentWorkingDirectory%
+    excludePaths:
+        - vendor
+    scanFiles:
+        - vendor/yiisoft/yii2/Yii.php
+        - vendor/craftcms/cms/src/Craft.php
+        - vendor/twig/twig/src/Extension/CoreExtension.php
+    earlyTerminatingMethodCalls:
+        Craft:
+            - dd
+        yii\base\Application:
+            - end
+        yii\base\ErrorHandler:
+            - convertExceptionToError
+    reportUnmatchedIgnoredErrors: false
+    universalObjectCratesClasses:
+        - craft\elements\Entry

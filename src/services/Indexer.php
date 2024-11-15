@@ -30,6 +30,7 @@ use fork\elastica\Elastica;
 use fork\elastica\events\IndexerInitEvent;
 use fork\elastica\events\IndexEvent;
 use fork\elastica\queue\ReindexJob;
+use stdClass;
 use yii\base\Event;
 use yii\base\InvalidConfigException;
 
@@ -48,38 +49,37 @@ use yii\base\InvalidConfigException;
  */
 class Indexer extends Component
 {
-
     // Public Methods
     // =========================================================================
 
     /** @var Client $client */
-    private $client;
+    private Client $client;
     /** @var string */
-    private $indexPrefix = 'craft';
+    private string $indexPrefix = 'craft';
 
-    const EVENT_INDEXER_INIT = 'indexerInit';
-    const EVENT_BEFORE_INDEX_DATA = 'beforeIndexData';
+    public const EVENT_INDEXER_INIT = 'indexerInit';
+    public const EVENT_BEFORE_INDEX_DATA = 'beforeIndexData';
 
     /**
      * list of section handles to consider for (re-)indexing entries
      *
      * @var string[]
      */
-    protected $sectionHandles;
+    protected array $sectionHandles;
 
     /**
      * list of group handles to consider for (re-)indexing categories
      *
      * @var string[]
      */
-    protected $categoryGroupHandles;
+    protected array $categoryGroupHandles;
 
     /**
      * list of volume handles to consider for (re-)indexing assets
      *
      * @var string[]
      */
-    protected $volumeHandles;
+    protected array $volumeHandles;
 
     /**
      * @inheritdoc
@@ -116,7 +116,7 @@ class Indexer extends Component
      *
      * @return bool|string
      */
-    public function getConnectionStatus()
+    public function getConnectionStatus(): bool|string
     {
         try {
             return $this->client->ping();
@@ -134,14 +134,13 @@ class Indexer extends Component
      * @throws MissingComponentException
      * @throws InvalidConfigException
      */
-    public function index(Element $element, $content = null)
+    public function index(Element $element, $content = null): bool|array
     {
         $site = $element->getSite();
 
         // Fire a 'beforeIndexData' event
         if ($this->hasEventHandlers(self::EVENT_BEFORE_INDEX_DATA)) {
             $event = new IndexEvent([
-                'entry' => $element, // TODO: remove in future release and use sender alone
                 'sender' => $element,
                 'indexData' => $content,
             ]);
@@ -178,14 +177,14 @@ class Indexer extends Component
      * @throws MissingComponentException
      * @throws InvalidConfigException
      */
-    public function delete(Element $element, $force = false)
+    public function delete(Element $element, bool $force = false): void
     {
         $isMultiSite = Craft::$app->getIsMultiSite();
 
         foreach (Craft::$app->sites->getAllSites() as $site) {
             $siteElement = $element;
 
-            if ($siteElement && $isMultiSite && !$force) {
+            if ($isMultiSite && !$force) {
                 $siteElement = Craft::$app->elements->getElementById($siteElement->id, get_class($siteElement), $site->id);
             }
 
@@ -220,7 +219,7 @@ class Indexer extends Component
     }
 
     /**
-     * Reindexes the elements.
+     * Reindex the elements.
      *
      * @param ReindexJob|null $reindexJob
      * @param QueueInterface|null $queue
@@ -239,7 +238,7 @@ class Indexer extends Component
                     'index' => strtolower($this->indexPrefix) . '*',
                     'body' => [
                         'query' => [
-                            'match_all' => new \stdClass(),
+                            'match_all' => new stdClass(),
                         ],
                     ]
                 ]
@@ -253,6 +252,7 @@ class Indexer extends Component
         foreach ($sites as $siteIndex => $site) {
             $entries = Entry::find()->section($this->sectionHandles)->site($site)->all();
             $categories = Category::find()->group($this->categoryGroupHandles)->site($site)->all();
+            /** @var Asset[] $assets */
             $assets = Asset::find()->volume($this->volumeHandles)->site($site)->all();
             $entriesCount = count($entries);
             $categoriesCount = count($categories);
@@ -330,7 +330,8 @@ class Indexer extends Component
      * @param array $settings
      * @param bool $closeAndOpenIndex
      */
-    public function setIndexSettings(string $index, array $settings, $closeAndOpenIndex = false) {
+    public function setIndexSettings(string $index, array $settings, bool $closeAndOpenIndex = false): void
+    {
         if ($closeAndOpenIndex) {
             // updating non-dynamic settings requires index closing (and opening)
             $this->client->indices()->close(['index' => $index]);
@@ -469,22 +470,12 @@ class Indexer extends Component
      */
     protected function isElementToBeIndexed(Element $element): bool
     {
-        switch (get_class($element)) {
-            case Entry::class:
-                /** @var Entry $element */
-                return $this->isSectionToBeIndexed($element->getSection()->handle);
-
-            case Category::class:
-                /** @var Category $element */
-                return $this->isCategoryGroupToBeIndexed($element->getGroup()->handle);
-
-            case Asset::class:
-                /** @var Asset $element */
-                return $this->isVolumeToBeIndexed($element->getVolume()->handle);
-
-            default:
-                return false;
-        }
+        return match (get_class($element)) {
+            Entry::class => $this->isSectionToBeIndexed($element->getSection()?->handle),
+            Category::class => $this->isCategoryGroupToBeIndexed($element->getGroup()->handle),
+            Asset::class => $this->isVolumeToBeIndexed($element->getVolume()->handle),
+            default => false,
+        };
     }
 
     /**
@@ -505,13 +496,13 @@ class Indexer extends Component
     /**
      * Determines if entries of the given section handle are considered to be indexed.
      *
-     * @param string $sectionHandle
+     * @param string|null $sectionHandle
      *
      * @return bool
      */
-    protected function isSectionToBeIndexed(string $sectionHandle): bool
+    protected function isSectionToBeIndexed(?string $sectionHandle): bool
     {
-        return in_array($sectionHandle, $this->sectionHandles);
+        return !empty($sectionHandle) && in_array($sectionHandle, $this->sectionHandles);
     }
 
     /**

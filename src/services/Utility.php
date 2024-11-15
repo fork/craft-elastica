@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Component;
 use craft\errors\MissingComponentException;
 use craft\helpers\Json;
+use Exception;
 use fork\elastica\Elastica;
 use fork\elastica\queue\ReindexJob;
 
@@ -29,20 +30,21 @@ class Utility extends Component
     public function handleUtilityFormSubmit(): string
     {
         $request = Craft::$app->getRequest();
+        $result = '';
 
         if ($request->getIsPost() && $request->getBodyParam('task') == 're-index') {
-            return $this->triggerReindex($request->getBodyParam('deleteAll'));
+            $result = $this->triggerReindex($request->getBodyParam('deleteAll'));
         }
 
         if ($request->getIsPost() && $request->getBodyParam('task') == 'index-template' && Craft::$app->user->checkPermission('elasticaIndexTemplates')) {
-            return $this->saveIndexTemplate();
+            $result = $this->saveIndexTemplate();
         }
 
         if ($request->getIsPost() && $request->getBodyParam('task') == 'search-templates' && Craft::$app->user->checkPermission('elasticaSearchTemplates')) {
-            return $this->saveSearchTemplates();
+            $result = $this->saveSearchTemplates();
         }
 
-        return '';
+        return $result;
     }
 
     /**
@@ -53,7 +55,7 @@ class Utility extends Component
      *
      * @throws MissingComponentException
      */
-    protected function triggerReindex($deleteAll = false): string
+    protected function triggerReindex(bool $deleteAll = false): string
     {
         $jobId = Craft::$app->queue->push(new ReindexJob(['deleteAll' => $deleteAll]));
 
@@ -84,7 +86,7 @@ class Utility extends Component
             $templateArray = Json::decode($settings->indexTemplate);
             $elastica->indexer->saveIndexTemplate($settings->indexTemplateName, $templateArray);
             $this->setNotice('Index Template saved!');
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->setError($exception->getMessage());
         }
 
@@ -112,7 +114,7 @@ class Utility extends Component
             }
 
             $this->setNotice('Search Templates saved!');
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->setError($exception->getMessage());
         }
 
@@ -126,7 +128,7 @@ class Utility extends Component
      *
      * @throws MissingComponentException
      */
-    protected function setNotice(string $message)
+    protected function setNotice(string $message): void
     {
         Craft::$app->getSession()->setNotice($message);
     }
@@ -138,7 +140,7 @@ class Utility extends Component
      *
      * @throws MissingComponentException
      */
-    protected function setError(string $message)
+    protected function setError(string $message): void
     {
         Craft::$app->getSession()->setError($message);
     }
