@@ -141,7 +141,6 @@ class Indexer extends Component
         // Fire a 'beforeIndexData' event
         if ($this->hasEventHandlers(self::EVENT_BEFORE_INDEX_DATA)) {
             $event = new IndexEvent([
-                'entry' => $element, // TODO: remove in future release and use sender alone
                 'sender' => $element,
                 'indexData' => $content,
             ]);
@@ -472,7 +471,7 @@ class Indexer extends Component
     protected function isElementToBeIndexed(Element $element): bool
     {
         return match (get_class($element)) {
-            Entry::class => $this->isSectionToBeIndexed($element->getSection()->handle),
+            Entry::class => $this->isSectionToBeIndexed($element->getSection()?->handle),
             Category::class => $this->isCategoryGroupToBeIndexed($element->getGroup()->handle),
             Asset::class => $this->isVolumeToBeIndexed($element->getVolume()->handle),
             default => false,
@@ -497,13 +496,13 @@ class Indexer extends Component
     /**
      * Determines if entries of the given section handle are considered to be indexed.
      *
-     * @param string $sectionHandle
+     * @param string|null $sectionHandle
      *
      * @return bool
      */
-    protected function isSectionToBeIndexed(string $sectionHandle): bool
+    protected function isSectionToBeIndexed(?string $sectionHandle): bool
     {
-        return in_array($sectionHandle, $this->sectionHandles);
+        return !empty($sectionHandle) && in_array($sectionHandle, $this->sectionHandles);
     }
 
     /**

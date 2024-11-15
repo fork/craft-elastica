@@ -18,8 +18,8 @@ use Exception;
 use fork\elastica\Elastica;
 use Craft;
 use craft\web\Controller;
-use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
+use yii\web\MethodNotAllowedHttpException;
 use yii\web\Response;
 
 /**
@@ -49,8 +49,8 @@ class ElasticsearchController extends Controller
 
     /**
      * @return Response
-     * @throws BadRequestHttpException
      * @throws ForbiddenHttpException
+     * @throws MethodNotAllowedHttpException
      */
     public function actionReindex()
     {
