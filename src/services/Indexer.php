@@ -126,7 +126,8 @@ class Indexer extends Component
     public function getConnectionStatus(): bool|string
     {
         try {
-            return $this->client->ping();
+            $status = $this->client->ping();
+            return $status->asBool() ?: $status->asString();
         } catch (ClientResponseException|ServerResponseException $e) {
             return $e->getMessage();
         }
