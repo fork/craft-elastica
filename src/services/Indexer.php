@@ -244,19 +244,24 @@ class Indexer extends Component
     public function reIndex(ReindexJob $reindexJob = null, QueueInterface $queue = null, bool $deleteAll = false): void
     {
         if ($deleteAll) {
-            $this->client->indices()->delete(['index' => strtolower($this->indexPrefix) . '*']);
+            foreach ($this->getAllIndexNames() as $indexName) {
+                $this->client->indices()->delete(['index' => $indexName, 'ignore_unavailable' => true]);
+            }
         } else {
-            // delete content only to keep settings and mappings
-            $this->client->deleteByQuery(
-                [
-                    'index' => strtolower($this->indexPrefix) . '*',
-                    'body' => [
-                        'query' => [
-                            'match_all' => new stdClass(),
-                        ],
+            foreach ($this->getAllIndexNames() as $indexName) {
+                // delete content only to keep settings and mappings
+                $this->client->deleteByQuery(
+                    [
+                        'index' => $indexName,
+                        'ignore_unavailable' => true,
+                        'body' => [
+                            'query' => [
+                                'match_all' => new stdClass(),
+                            ],
+                        ]
                     ]
-                ]
-            );
+                );
+            }
         }
 
         $isConsole = Craft::$app->request->getIsConsoleRequest();
@@ -593,5 +598,54 @@ class Indexer extends Component
         $parts[] = StringHelper::toLowerCase($site->language);
 
         return join('_', $parts);
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getAllIndexNames(): array
+    {
+        $indexNames = [];
+        $sites = Craft::$app->getSites()->getAllSites();
+
+        foreach ($sites as $site) {
+            foreach ($this->sectionHandles as $sectionHandle) {
+                $indexNames[] = join(
+                    '_',
+                    [
+                        $this->indexPrefix,
+                        StringHelper::toSnakeCase($sectionHandle),
+                        StringHelper::toLowerCase($site->handle),
+                        StringHelper::toLowerCase($site->language)
+                    ]
+                );
+            }
+
+            foreach ($this->categoryGroupHandles as $cgHandle) {
+                $indexNames[] = join(
+                    '_',
+                    [
+                        $this->indexPrefix,
+                        StringHelper::toSnakeCase($cgHandle),
+                        StringHelper::toLowerCase($site->handle),
+                        StringHelper::toLowerCase($site->language)
+                    ]
+                );
+            }
+
+            foreach ($this->volumeHandles as $volumeHandle) {
+                $indexNames[] = join(
+                    '_',
+                    [
+                        $this->indexPrefix,
+                        StringHelper::toSnakeCase($volumeHandle),
+                        StringHelper::toLowerCase($site->handle),
+                        StringHelper::toLowerCase($site->language)
+                    ]
+                );
+            }
+        }
+
+        return $indexNames;
     }
 }
