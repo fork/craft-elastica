@@ -11,8 +11,8 @@
 namespace fork\elastica\models;
 
 use craft\helpers\Json;
-use Exception;
 use craft\base\Model;
+use yii\base\Exception;
 
 /**
  * Elasticsearch Settings Model
