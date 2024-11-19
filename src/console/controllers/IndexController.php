@@ -7,6 +7,9 @@
 namespace fork\elastica\console\controllers;
 
 use craft\errors\MissingComponentException;
+use Elastic\Elasticsearch\Exception\ClientResponseException;
+use Elastic\Elasticsearch\Exception\MissingParameterException;
+use Elastic\Elasticsearch\Exception\ServerResponseException;
 use fork\elastica\Elastica;
 use Craft;
 use yii\base\Behavior;
@@ -47,8 +50,11 @@ class IndexController extends Controller
      * Delete Index and Reindex
      *
      * @return void
-     * @throws MissingComponentException
      * @throws InvalidConfigException
+     * @throws MissingComponentException
+     * @throws ClientResponseException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
      */
     public function actionReindex()
     {

@@ -23,8 +23,13 @@
  */
 
 return [
+    'hosts' => [],
+    'indexTemplateName' => '',
+    'indexTemplate' => '',
+    'searchTemplates' => [],
 
-    // This controls blah blah blah
-    //"someAttribute" => true,
-
+    // Overrides the default ttr for the reindexing Queue Job.
+    // This might be necessary when you have lots of data to index.
+    // Set to null to use Craft's default (300 seconds).
+    'reindexTtr' => null
 ];

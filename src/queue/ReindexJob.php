@@ -6,6 +6,9 @@ use Closure;
 use craft\errors\MissingComponentException;
 use craft\queue\BaseJob;
 use craft\queue\QueueInterface;
+use Elastic\Elasticsearch\Exception\ClientResponseException;
+use Elastic\Elasticsearch\Exception\MissingParameterException;
+use Elastic\Elasticsearch\Exception\ServerResponseException;
 use fork\elastica\Elastica;
 use yii\base\InvalidConfigException;
 use yii\queue\Queue;
@@ -31,8 +34,11 @@ class ReindexJob extends BaseJob
 
     /**
      * @param Queue|QueueInterface $queue The queue the job belongs to
-     * @throws MissingComponentException
      * @throws InvalidConfigException
+     * @throws MissingComponentException
+     * @throws ClientResponseException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
      */
     public function execute($queue): void
     {
