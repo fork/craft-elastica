@@ -22,14 +22,19 @@ use craft\helpers\ElementHelper;
 use craft\helpers\StringHelper;
 use craft\models\Site;
 use craft\queue\QueueInterface;
-use Elasticsearch\Client;
-use Elasticsearch\ClientBuilder;
-use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
+use Elastic\Elasticsearch\Client;
+use Elastic\Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\Exception\AuthenticationException;
+use Elastic\Elasticsearch\Exception\ClientResponseException;
+use Elastic\Elasticsearch\Exception\MissingParameterException;
+use Elastic\Elasticsearch\Exception\ServerResponseException;
+use Elastic\Elasticsearch\Response\Elasticsearch;
 use Exception;
 use fork\elastica\Elastica;
 use fork\elastica\events\IndexerInitEvent;
 use fork\elastica\events\IndexEvent;
 use fork\elastica\queue\ReindexJob;
+use Http\Promise\Promise;
 use stdClass;
 use yii\base\Event;
 use yii\base\InvalidConfigException;
@@ -54,6 +59,7 @@ class Indexer extends Component
 
     /** @var Client $client */
     private Client $client;
+
     /** @var string */
     private string $indexPrefix = 'craft';
 
@@ -83,6 +89,7 @@ class Indexer extends Component
 
     /**
      * @inheritdoc
+     * @throws AuthenticationException
      */
     public function init(): void
     {
@@ -119,22 +126,26 @@ class Indexer extends Component
     public function getConnectionStatus(): bool|string
     {
         try {
-            return $this->client->ping();
-        } catch (NoNodesAvailableException $e) {
+            $status = $this->client->ping();
+            return $status->asBool() ?: $status->asString();
+        } catch (ClientResponseException|ServerResponseException $e) {
             return $e->getMessage();
         }
     }
 
     /**
      * @param Element $element
-     * @param $content
+     * @param null $content
      *
-     * @return array|bool
+     * @return Elasticsearch|Promise|null
      *
-     * @throws MissingComponentException
+     * @throws ClientResponseException
      * @throws InvalidConfigException
+     * @throws MissingComponentException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
      */
-    public function index(Element $element, $content = null): bool|array
+    public function index(Element $element, $content = null): Elasticsearch|Promise|null
     {
         $site = $element->getSite();
 
@@ -155,7 +166,7 @@ class Indexer extends Component
         ];
 
         try {
-            return empty($content) ? false : $this->client->index($params);
+            return empty($content) ? null : $this->client->index($params);
         } catch (Exception $exception) {
             Craft::error($exception->getMessage(), 'elasticsearch');
             if (Craft::$app->getRequest()->getIsCpRequest() && !Craft::$app->getResponse()->isSent) {
@@ -166,7 +177,7 @@ class Indexer extends Component
                 throw $exception;
             }
 
-            return false;
+            return null;
         }
     }
 
@@ -224,25 +235,33 @@ class Indexer extends Component
      * @param ReindexJob|null $reindexJob
      * @param QueueInterface|null $queue
      * @param bool $deleteAll delete all contents and index settings and mappings
-     * @throws MissingComponentException
+     * @throws ClientResponseException
      * @throws InvalidConfigException
+     * @throws MissingComponentException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
      */
     public function reIndex(ReindexJob $reindexJob = null, QueueInterface $queue = null, bool $deleteAll = false): void
     {
         if ($deleteAll) {
-            $this->client->indices()->delete(['index' => strtolower($this->indexPrefix) . '*']);
+            foreach ($this->getAllIndexNames() as $indexName) {
+                $this->client->indices()->delete(['index' => $indexName, 'ignore_unavailable' => true]);
+            }
         } else {
-            // delete content only to keep settings and mappings
-            $this->client->deleteByQuery(
-                [
-                    'index' => strtolower($this->indexPrefix) . '*',
-                    'body' => [
-                        'query' => [
-                            'match_all' => new stdClass(),
-                        ],
+            foreach ($this->getAllIndexNames() as $indexName) {
+                // delete content only to keep settings and mappings
+                $this->client->deleteByQuery(
+                    [
+                        'index' => $indexName,
+                        'ignore_unavailable' => true,
+                        'body' => [
+                            'query' => [
+                                'match_all' => new stdClass(),
+                            ],
+                        ]
                     ]
-                ]
-            );
+                );
+            }
         }
 
         $isConsole = Craft::$app->request->getIsConsoleRequest();
@@ -329,6 +348,9 @@ class Indexer extends Component
      * @param string $index
      * @param array $settings
      * @param bool $closeAndOpenIndex
+     * @throws ClientResponseException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
      */
     public function setIndexSettings(string $index, array $settings, bool $closeAndOpenIndex = false): void
     {
@@ -353,9 +375,12 @@ class Indexer extends Component
      *
      * @param string $name
      * @param array $templateArray
-     * @return array
+     * @return Elasticsearch|Promise
+     * @throws ClientResponseException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
      */
-    public function saveIndexTemplate(string $name, array $templateArray): array
+    public function saveIndexTemplate(string $name, array $templateArray): Elasticsearch|Promise
     {
         return $this->client->indices()->putTemplate([
             'name' => $name,
@@ -369,9 +394,12 @@ class Indexer extends Component
      * @param string $handle
      * @param array $source
      * @param array|null $params
-     * @return array
+     * @return Elasticsearch|Promise
+     * @throws ClientResponseException
+     * @throws ServerResponseException
+     * @throws MissingParameterException
      */
-    public function saveSearchTemplate(string $handle, array $source, array $params = null): array
+    public function saveSearchTemplate(string $handle, array $source, array $params = null): Elasticsearch|Promise
     {
         return $this->client->putScript([
             'id' => $handle,
@@ -391,9 +419,11 @@ class Indexer extends Component
      *
      * @param ModelEvent $event
      *
-     * @throws MissingComponentException
+     * @throws ClientResponseException
      * @throws InvalidConfigException
-     *
+     * @throws MissingComponentException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
      * @see Element::EVENT_AFTER_SAVE
      */
     public function handleAfterSaveEvent(ModelEvent $event): void
@@ -420,9 +450,11 @@ class Indexer extends Component
      *
      * @param Event $event
      *
-     * @throws MissingComponentException
+     * @throws ClientResponseException
      * @throws InvalidConfigException
-     *
+     * @throws MissingComponentException
+     * @throws MissingParameterException
+     * @throws ServerResponseException
      * @see Element::EVENT_AFTER_RESTORE
      */
     public function handleAfterRestoreEvent(Event $event): void
@@ -566,5 +598,54 @@ class Indexer extends Component
         $parts[] = StringHelper::toLowerCase($site->language);
 
         return join('_', $parts);
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getAllIndexNames(): array
+    {
+        $indexNames = [];
+        $sites = Craft::$app->getSites()->getAllSites();
+
+        foreach ($sites as $site) {
+            foreach ($this->sectionHandles as $sectionHandle) {
+                $indexNames[] = join(
+                    '_',
+                    [
+                        $this->indexPrefix,
+                        StringHelper::toSnakeCase($sectionHandle),
+                        StringHelper::toLowerCase($site->handle),
+                        StringHelper::toLowerCase($site->language)
+                    ]
+                );
+            }
+
+            foreach ($this->categoryGroupHandles as $cgHandle) {
+                $indexNames[] = join(
+                    '_',
+                    [
+                        $this->indexPrefix,
+                        StringHelper::toSnakeCase($cgHandle),
+                        StringHelper::toLowerCase($site->handle),
+                        StringHelper::toLowerCase($site->language)
+                    ]
+                );
+            }
+
+            foreach ($this->volumeHandles as $volumeHandle) {
+                $indexNames[] = join(
+                    '_',
+                    [
+                        $this->indexPrefix,
+                        StringHelper::toSnakeCase($volumeHandle),
+                        StringHelper::toLowerCase($site->handle),
+                        StringHelper::toLowerCase($site->language)
+                    ]
+                );
+            }
+        }
+
+        return $indexNames;
     }
 }

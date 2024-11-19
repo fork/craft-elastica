@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Component;
 use craft\errors\MissingComponentException;
 use craft\helpers\Json;
+use craft\helpers\Queue;
 use Exception;
 use fork\elastica\Elastica;
 use fork\elastica\queue\ReindexJob;
@@ -57,7 +58,7 @@ class Utility extends Component
      */
     protected function triggerReindex(bool $deleteAll = false): string
     {
-        $jobId = Craft::$app->queue->push(new ReindexJob(['deleteAll' => $deleteAll]));
+        $jobId = Queue::push(new ReindexJob(['deleteAll' => $deleteAll]), ttr: Elastica::$plugin->settings->reindexTtr);
 
         if (!empty($jobId)) {
             $this->setNotice('Re-indexing triggered.');
