@@ -1,6 +1,8 @@
 <div align="left">
-  <img width="600" title="Craft Elastica" src="https://github.fork.de/CraftElastica_210106.svg">
+  <img width="600" title="Craft Elastica" src="resources/img/plugin-logo.png" alt="Fork Logo" />
 </div>
+
+# Elastica Plugin for Craft 5.x
 
 **Table of contents**
 
@@ -95,7 +97,7 @@ Event::on(
 ---
 
 <div align="center">
-  <img src="https://github.fork.de/heart.png" width="38" height="41" alt="Fork Logo" />
+  <img src="resources/img/heart.png" width="38" height="41" alt="Made with love by Fork" />
 
   <p>Brought to you by <a href="https://www.fork.de">Fork Unstable Media GmbH</a></p>
 </div>
