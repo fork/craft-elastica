@@ -136,3 +136,13 @@
     allowReorder: true,
     allowDelete: true,
 }) }}
+
+<hr />
+
+{{ forms.textField({
+    label: 'Reindex Job Ttr',
+    instructions: 'Set the ttr for the reindexing Queue job',
+    id: 'reindexTtr',
+    name: 'reindexTtr',
+    value: settings.reindexTtr,
+}) }}

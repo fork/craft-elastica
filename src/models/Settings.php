@@ -61,6 +61,13 @@ class Settings extends Model
      */
     public array $searchTemplates = [];
 
+    /**
+     * Default ttr for Reindex Job
+     *
+     * @var int|null
+     */
+    public ?int $reindexTtr = null;
+
     // Public Methods
     // =========================================================================
 
@@ -104,6 +111,7 @@ class Settings extends Model
                     $this->addError($attribute, $exception->getMessage());
                 }
             }],
+            ['reindexTtr', 'number', 'integerOnly' => true]
         ];
     }
 }
