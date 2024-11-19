@@ -23,7 +23,15 @@
 
 ## Requirements
 
-- Craft CMS >= 3.5.x
+- Craft CMS >= 5.x
+
+### Version Matrix
+
+| Elastica Version | Craft Version | ElasticSearch Version |
+|------------------|---------------|-----------------------|
+| 4.x              | 5.x           | 8.x                   |
+| 3.x              | 5.x           | 7.x                   |
+| 2.x              | 4.x           | 7.x                   |
 
 ## Setup
 
@@ -38,7 +46,7 @@ composer require fork/craft-elastica
 
 **2. Configuration**
 
-Go to the plugin settings page and enter a index prefix name which is prepended to the indexes beeing created in Elasticsearch.
+Go to the plugin settings page and enter a index prefix name which is prepended to the indexes being created in Elasticsearch.
 The name of the index is generated from this prefix.
 Also provide the hostname of the elasticsearch instance.
 
@@ -57,6 +65,9 @@ Event::on(
        ]);
        $event->addCategoryGroupHandles([
            'topics',
+       ]);
+       $event->addVolumeHandles([
+           'images',
        ]);
    }
 );
