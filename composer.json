@@ -2,7 +2,7 @@
     "name": "fork/craft-elastica",
     "description": "A plugin to connect to Elasticsearch and persist elements via hooks",
     "type": "craft-plugin",
-    "version": "dev-4.x",
+    "version": "4.0.0",
     "keywords": [
         "craft",
         "cms",
