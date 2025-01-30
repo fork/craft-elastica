@@ -23,7 +23,7 @@
 
 ## Requirements
 
-- Craft CMS >= 3.5.x
+- Craft CMS >= 5.x
 
 ## Setup
 
@@ -46,7 +46,7 @@ Also provide the hostname of the elasticsearch instance.
 
 To generate the data to index register event handlers in your own module or plugin class like this:
 
-```
+```php
 // initialize elasticsearch indexer
 Event::on(
    Indexer::class,
@@ -70,6 +70,26 @@ Event::on(
        $event->indexData = $indexData;
    }
 );
+```
+
+## Environment based configuration
+
+You can make the plugin's configuration environment based by adding an elastica.php file in your config directory with
+the following contents. This is just an example, you can name your environment variables as you want.
+
+```php
+use craft\helpers\App;
+
+return [
+    'indexingEnabled' => App::env('ELASTICSEARCH_INDEXING_ENABLED') ?? true,
+    'hosts' => [
+        [
+            App::env('CRAFT_ENVIRONMENT'),
+            App::env('ELASTICSEARCH_URL'),
+            App::env('ELASTICSEARCH_INDEX_PREFIX'),
+        ]
+    ]
+];
 ```
 
 ## Roadmap

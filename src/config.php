@@ -23,8 +23,9 @@
  */
 
 return [
-
-    // This controls blah blah blah
-    //"someAttribute" => true,
-
+    'indexingEnabled' => true,
+    'hosts' => [],
+    'indexTemplateName' => '',
+    'indexTemplate' => '',
+    'searchTemplates' => []
 ];
