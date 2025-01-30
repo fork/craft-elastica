@@ -4,11 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.1.0 - 2025-01-30
+### Added
+- Added indexingEnabled setting
+
 ## 4.0.0 - 2024-11-19
 ### Added
 - Added support for ElasticSearch 8
 - Added a config setting for a custom ttr for the reindex queue job
 - Drop support for ElasticSearch 7 (use 3.x or 2.x instead)
+
+## 3.1.0 - 2025-01-30
+### Added
+- Added indexingEnabled setting
 
 ## 3.0.0 - 2024-11-15
 ### Added

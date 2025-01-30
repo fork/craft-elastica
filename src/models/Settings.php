@@ -33,6 +33,8 @@ class Settings extends Model
     // Public Properties
     // =========================================================================
 
+    public bool $indexingEnabled = true;
+
     /**
      * The host domains for the elasticsearch instance
      *

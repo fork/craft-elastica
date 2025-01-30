@@ -49,9 +49,19 @@
     allowDelete: true,
 }) }}
 
+<hr />
+
 <p>
     <strong>Ping status: </strong><span class="status {{ connectionStatus is same as(true) ? 'live' : 'expired' }}"></span>({{ connectionStatus is same as(true) ? 'Connection successful' : connectionStatus }})
 </p>
+
+{{ forms.lightswitchField({
+    label: 'Enable Indexing',
+    instructions: 'Enable/Disable indexing completely',
+    id: 'indexingEnabled',
+    name: 'indexingEnabled',
+    on: settings.indexingEnabled is same as(true) ? '1' : '0',
+}) }}
 
 <hr />
 
