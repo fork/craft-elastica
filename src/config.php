@@ -23,6 +23,7 @@
  */
 
 return [
+    'indexingEnabled' => true,
     'hosts' => [],
     'indexTemplateName' => '',
     'indexTemplate' => '',

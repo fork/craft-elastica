@@ -147,6 +147,10 @@ class Indexer extends Component
      */
     public function index(Element $element, $content = null): Elasticsearch|Promise|null
     {
+        if (!Elastica::$plugin->settings->indexingEnabled) {
+            return false;
+        }
+
         $site = $element->getSite();
 
         // Fire a 'beforeIndexData' event
@@ -502,12 +506,12 @@ class Indexer extends Component
      */
     protected function isElementToBeIndexed(Element $element): bool
     {
-        return match (get_class($element)) {
-            Entry::class => $this->isSectionToBeIndexed($element->getSection()?->handle),
-            Category::class => $this->isCategoryGroupToBeIndexed($element->getGroup()->handle),
-            Asset::class => $this->isVolumeToBeIndexed($element->getVolume()->handle),
-            default => false,
-        };
+        return Elastica::$plugin->settings->indexingEnabled && match (get_class($element)) {
+                Entry::class => $this->isSectionToBeIndexed($element->getSection()?->handle),
+                Category::class => $this->isCategoryGroupToBeIndexed($element->getGroup()->handle),
+                Asset::class => $this->isVolumeToBeIndexed($element->getVolume()->handle),
+                default => false,
+            };
     }
 
     /**
