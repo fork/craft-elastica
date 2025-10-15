@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.0.0 - 2025-10-15
+
+YOU HAVE TO UPDATE YOUR INDEX TEMPLATE FORMAT FROM DEPRECATED LEGACY FORMAT TO THE NEW ONE
+Compare [this (old)](https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-indices-put-template) with
+[this (new)](https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-indices-put-index-template).
+
+### Changed
+- Updated Index Template usage
+
 ## 4.1.0 - 2025-01-30
 ### Added
 - Added indexingEnabled setting

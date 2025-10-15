@@ -148,7 +148,7 @@ class Indexer extends Component
     public function index(Element $element, $content = null): Elasticsearch|Promise|null
     {
         if (!Elastica::$plugin->settings->indexingEnabled) {
-            return false;
+            return null;
         }
 
         $site = $element->getSite();
@@ -386,7 +386,7 @@ class Indexer extends Component
      */
     public function saveIndexTemplate(string $name, array $templateArray): Elasticsearch|Promise
     {
-        return $this->client->indices()->putTemplate([
+        return $this->client->indices()->putIndexTemplate([
             'name' => $name,
             'body' => $templateArray
         ]);
