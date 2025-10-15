@@ -29,11 +29,12 @@
 
 ### Version Matrix
 
-| Elastica Version | Craft Version | ElasticSearch Version |
-|------------------|---------------|-----------------------|
-| 4.x              | 5.x           | 8.x                   |
-| 3.x              | 5.x           | 7.x                   |
-| 2.x              | 4.x           | 7.x                   |
+| Elastica Version | Craft Version | ElasticSearch Version | Hint                                  |
+|------------------|---------------|-----------------------|---------------------------------------|
+| 5.x              | 5.x           | 8.x                   | Uses new index template format        |
+| 4.x              | 5.x           | 8.x                   | Uses deprecated index template format |
+| 3.x              | 5.x           | 7.x                   |                                       |
+| 2.x              | 4.x           | 7.x                   |                                       |
 
 ## Setup
 

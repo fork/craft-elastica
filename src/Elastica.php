@@ -69,7 +69,7 @@ class Elastica extends Plugin
      *
      * @var string
      */
-    public string $schemaVersion = '4.1.0';
+    public string $schemaVersion = '5.0.0';
 
     // Public Methods
     // =========================================================================
